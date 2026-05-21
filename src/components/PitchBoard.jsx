@@ -8,14 +8,21 @@ const squad = [
   "Sonny", "Charlie", "Cian"
 ];
 
-// --- 7‑PLAYER FORMATION (portrait layout) ---
+// --- 7‑PLAYER FORMATION (portrait, GK bottom, STR top) ---
 const formation = [
+  // GK (bottom)
   { id: "GK", label: "Goalkeeper", x: 280, y: 700 },
+
+  // 2 Defenders
   { id: "DEF1", label: "Defender 1", x: 180, y: 550 },
   { id: "DEF2", label: "Defender 2", x: 380, y: 550 },
+
+  // 3 Midfielders
   { id: "MID1", label: "Midfielder 1", x: 150, y: 380 },
   { id: "MID2", label: "Midfielder 2", x: 280, y: 380 },
   { id: "MID3", label: "Midfielder 3", x: 410, y: 380 },
+
+  // Striker (top)
   { id: "STR", label: "Striker", x: 280, y: 200 }
 ];
 
@@ -152,7 +159,7 @@ export default function PitchBoard() {
           </button>
         </div>
 
-        {/* PORTRAIT PITCH */}
+        {/* PORTRAIT PITCH (no rotation) */}
         <div
           onMouseDown={start}
           onMouseMove={move}
@@ -166,8 +173,6 @@ export default function PitchBoard() {
             borderRadius: "16px",
             overflow: "hidden",
             boxShadow: "0 18px 45px rgba(0,0,0,0.45)",
-            transform: "rotate(90deg)",
-            transformOrigin: "center center",
             margin: "0 auto"
           }}
         >
@@ -187,37 +192,107 @@ export default function PitchBoard() {
 
           {/* Pitch lines + GOALS */}
           <svg width="100%" height="100%" style={{ position: "absolute" }}>
-            <rect x="2%" y="2%" width="96%" height="96%" fill="none" stroke="white" strokeWidth="3" />
-            <line x1="50%" y1="2%" x2="50%" y2="98%" stroke="white" strokeWidth="3" />
-            <circle cx="50%" cy="50%" r="8%" stroke="white" strokeWidth="3" fill="none" />
+            <rect
+              x="5%"
+              y="5%"
+              width="90%"
+              height="90%"
+              fill="none"
+              stroke="white"
+              strokeWidth="3"
+            />
+            <line
+              x1="50%"
+              y1="5%"
+              x2="50%"
+              y2="95%"
+              stroke="white"
+              strokeWidth="3"
+            />
+            <circle
+              cx="50%"
+              cy="50%"
+              r="8%"
+              stroke="white"
+              strokeWidth="3"
+              fill="none"
+            />
 
             {/* TOP GOAL */}
-            <rect x="40%" y="0.5%" width="20%" height="1.5%" fill="none" stroke="white" strokeWidth="3" />
+            <rect
+              x="40%"
+              y="3%"
+              width="20%"
+              height="2%"
+              fill="none"
+              stroke="white"
+              strokeWidth="3"
+            />
 
             {/* BOTTOM GOAL */}
-            <rect x="40%" y="98%" width="20%" height="1.5%" fill="none" stroke="white" strokeWidth="3" />
+            <rect
+              x="40%"
+              y="95%"
+              width="20%"
+              height="2%"
+              fill="none"
+              stroke="white"
+              strokeWidth="3"
+            />
           </svg>
 
           {/* Arrows */}
-          <svg width="100%" height="100%" style={{ position: "absolute", pointerEvents: "none" }}>
+          <svg
+            width="100%"
+            height="100%"
+            style={{ position: "absolute", pointerEvents: "none" }}
+          >
             <defs>
-              <marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto">
+              <marker
+                id="arrow"
+                markerWidth="10"
+                markerHeight="10"
+                refX="8"
+                refY="3"
+                orient="auto"
+              >
                 <polygon points="0 0, 10 3, 0 6" fill="#f43f5e" />
               </marker>
             </defs>
 
             {lines.map((l, i) => (
-              <line key={i} x1={l.x1} y1={l.y1} x2={l.x2} y2={l.y2} stroke="#f43f5e" strokeWidth="4" markerEnd="url(#arrow)" />
+              <line
+                key={i}
+                x1={l.x1}
+                y1={l.y1}
+                x2={l.x2}
+                y2={l.y2}
+                stroke="#f43f5e"
+                strokeWidth="4"
+                markerEnd="url(#arrow)"
+              />
             ))}
 
             {current && (
-              <line x1={current.x1} y1={current.y1} x2={current.x2} y2={current.y2} stroke="orange" strokeWidth="4" markerEnd="url(#arrow)" />
+              <line
+                x1={current.x1}
+                y1={current.y1}
+                x2={current.x2}
+                y2={current.y2}
+                stroke="orange"
+                strokeWidth="4"
+                markerEnd="url(#arrow)"
+              />
             )}
           </svg>
 
           {/* Player positions */}
           {formation.map((pos) => (
-            <Draggable key={pos.id} defaultPosition={{ x: pos.x, y: pos.y }} bounds="parent">
+            <Draggable
+              key={pos.id}
+              defaultPosition={{ x: pos.x, y: pos.y }}
+              bounds="parent"
+            >
               <div
                 onClick={() => setSelectedPos(pos.id)}
                 style={{
