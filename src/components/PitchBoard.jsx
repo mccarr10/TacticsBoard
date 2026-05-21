@@ -8,15 +8,15 @@ const squad = [
   "Sonny", "Charlie", "Cian"
 ];
 
-// --- FIXED 7‑PLAYER FORMATION (upright layout, rotated visually) ---
+// --- 7‑PLAYER FORMATION (portrait layout) ---
 const formation = [
-  { id: "GK", label: "Goalkeeper", x: 450, y: 80 },
-  { id: "DEF1", label: "Defender 1", x: 300, y: 180 },
-  { id: "DEF2", label: "Defender 2", x: 600, y: 180 },
-  { id: "MID1", label: "Midfielder 1", x: 250, y: 300 },
-  { id: "MID2", label: "Midfielder 2", x: 450, y: 300 },
-  { id: "MID3", label: "Midfielder 3", x: 650, y: 300 },
-  { id: "STR", label: "Striker", x: 450, y: 420 }
+  { id: "GK", label: "Goalkeeper", x: 280, y: 700 },
+  { id: "DEF1", label: "Defender 1", x: 180, y: 550 },
+  { id: "DEF2", label: "Defender 2", x: 380, y: 550 },
+  { id: "MID1", label: "Midfielder 1", x: 150, y: 380 },
+  { id: "MID2", label: "Midfielder 2", x: 280, y: 380 },
+  { id: "MID3", label: "Midfielder 3", x: 410, y: 380 },
+  { id: "STR", label: "Striker", x: 280, y: 200 }
 ];
 
 export default function PitchBoard() {
@@ -152,7 +152,7 @@ export default function PitchBoard() {
           </button>
         </div>
 
-        {/* ROTATED PITCH */}
+        {/* PORTRAIT PITCH */}
         <div
           onMouseDown={start}
           onMouseMove={move}
@@ -160,24 +160,26 @@ export default function PitchBoard() {
           style={{
             position: "relative",
             width: "100%",
-            maxWidth: "900px",
-            aspectRatio: "16/9",
+            maxWidth: "600px",
+            aspectRatio: "9/16",
             background: "#14532d",
             borderRadius: "16px",
             overflow: "hidden",
             boxShadow: "0 18px 45px rgba(0,0,0,0.45)",
-            transform: "rotate(180deg)"
+            transform: "rotate(90deg)",
+            transformOrigin: "center center",
+            margin: "0 auto"
           }}
         >
           {/* Grass stripes */}
-          {[...Array(10)].map((_, i) => (
+          {[...Array(16)].map((_, i) => (
             <div
               key={i}
               style={{
                 position: "absolute",
-                top: `${i * 10}%`,
+                top: `${i * 6.25}%`,
                 width: "100%",
-                height: "10%",
+                height: "6.25%",
                 background: i % 2 === 0 ? "#166534" : "#15803d"
               }}
             />
@@ -187,15 +189,13 @@ export default function PitchBoard() {
           <svg width="100%" height="100%" style={{ position: "absolute" }}>
             <rect x="2%" y="2%" width="96%" height="96%" fill="none" stroke="white" strokeWidth="3" />
             <line x1="50%" y1="2%" x2="50%" y2="98%" stroke="white" strokeWidth="3" />
-            <circle cx="50%" cy="50%" r="6%" stroke="white" strokeWidth="3" fill="none" />
+            <circle cx="50%" cy="50%" r="8%" stroke="white" strokeWidth="3" fill="none" />
 
-            {/* TOP GOAL (rotated) */}
-            <rect x="0.5%" y="40%" width="1.5%" height="20%" fill="none" stroke="white" strokeWidth="3" />
-            <line x1="0.5%" y1="40%" x2="2%" y2="40%" stroke="white" strokeWidth="3" />
+            {/* TOP GOAL */}
+            <rect x="40%" y="0.5%" width="20%" height="1.5%" fill="none" stroke="white" strokeWidth="3" />
 
-            {/* BOTTOM GOAL (rotated) */}
-            <rect x="98%" y="40%" width="1.5%" height="20%" fill="none" stroke="white" strokeWidth="3" />
-            <line x1="98%" y1="40%" x2="96.5%" y2="40%" stroke="white" strokeWidth="3" />
+            {/* BOTTOM GOAL */}
+            <rect x="40%" y="98%" width="20%" height="1.5%" fill="none" stroke="white" strokeWidth="3" />
           </svg>
 
           {/* Arrows */}
