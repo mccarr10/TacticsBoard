@@ -8,22 +8,25 @@ const squad = [
   "Sonny", "Charlie", "Cian"
 ];
 
+// --- MODERN BLACK & WHITE STRIPED JERSEY SVG ---
+const JerseyIcon = () => (
+  <svg width="38" height="38" viewBox="0 0 64 64">
+    <path d="M16 8 L24 4 L40 4 L48 8 L56 20 L48 28 L48 56 L16 56 L16 28 L8 20 Z"
+      fill="#ffffff" stroke="#000" strokeWidth="3" />
+    <rect x="22" y="4" width="6" height="52" fill="#000" />
+    <rect x="36" y="4" width="6" height="52" fill="#000" />
+  </svg>
+);
+
 // --- 7‑PLAYER FORMATION (portrait, GK bottom, STR top) ---
 const formation = [
-  // GK (bottom)
-  { id: "GK", label: "Goalkeeper", x: 180, y: 620 },
-
-  // 2 Defenders
-  { id: "DEF1", label: "Defender 1", x: 110, y: 500 },
-  { id: "DEF2", label: "Defender 2", x: 250, y: 500 },
-
-  // 3 Midfielders
-  { id: "MID1", label: "Midfielder 1", x: 90, y: 370 },
-  { id: "MID2", label: "Midfielder 2", x: 180, y: 370 },
-  { id: "MID3", label: "Midfielder 3", x: 270, y: 370 },
-
-  // Striker (top)
-  { id: "STR", label: "Striker", x: 180, y: 230 }
+  { id: "GK", label: "Goalkeeper", x: 160, y: 620 },
+  { id: "DEF1", label: "Defender 1", x: 90, y: 500 },
+  { id: "DEF2", label: "Defender 2", x: 230, y: 500 },
+  { id: "MID1", label: "Midfielder 1", x: 70, y: 370 },
+  { id: "MID2", label: "Midfielder 2", x: 160, y: 370 },
+  { id: "MID3", label: "Midfielder 3", x: 250, y: 370 },
+  { id: "STR", label: "Striker", x: 160, y: 230 }
 ];
 
 export default function PitchBoard() {
@@ -67,40 +70,35 @@ export default function PitchBoard() {
   const clearArrows = () => setLines([]);
 
   return (
-    <div
-      style={{
-        display: "flex",
-        height: "100vh",
-        fontFamily: "Inter, sans-serif",
-        overflow: "hidden"
-      }}
-    >
+    <div style={{
+      display: "flex",
+      height: "100vh",
+      fontFamily: "Inter, sans-serif",
+      overflow: "hidden"
+    }}>
+
       {/* LEFT PANEL */}
-      <div
-        style={{
-          width: "230px",
-          background: "#1e293b",
-          color: "white",
-          padding: "12px",
-          overflowY: "auto",
-          borderRight: "3px solid #0f172a"
-        }}
-      >
+      <div style={{
+        width: "230px",
+        background: "#1e293b",
+        color: "white",
+        padding: "12px",
+        overflowY: "auto",
+        borderRight: "3px solid #0f172a"
+      }}>
         <h2 style={{ marginBottom: "10px", fontSize: "18px" }}>Squad List</h2>
 
         {selectedPos && (
-          <div
-            style={{
-              background: "#facc15",
-              color: "#000",
-              padding: "8px",
-              borderRadius: "8px",
-              marginBottom: "10px",
-              fontWeight: 700,
-              textAlign: "center",
-              fontSize: "14px"
-            }}
-          >
+          <div style={{
+            background: "#facc15",
+            color: "#000",
+            padding: "8px",
+            borderRadius: "8px",
+            marginBottom: "10px",
+            fontWeight: 700,
+            textAlign: "center",
+            fontSize: "14px"
+          }}>
             Assigning to: {selectedPos}
           </div>
         )}
@@ -108,84 +106,62 @@ export default function PitchBoard() {
         <h3 style={{ marginBottom: "6px", fontSize: "15px" }}>Players</h3>
 
         {squad.map((player) => (
-          <div
-            key={player}
-            onClick={() => assignPlayer(player)}
-            style={{
-              display: "flex",
-              alignItems: "center",
-              gap: "8px",
-              padding: "8px",
-              marginBottom: "6px",
-              background: "#334155",
-              borderRadius: "10px",
-              cursor: "pointer"
-            }}
-          >
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="#fff">
-              <circle cx="12" cy="6" r="4" />
-              <path d="M12 10c-4 0-7 3-7 7v3h14v-3c0-4-3-7-7-7z" />
-            </svg>
-
+          <div key={player} onClick={() => assignPlayer(player)} style={{
+            display: "flex",
+            alignItems: "center",
+            gap: "8px",
+            padding: "8px",
+            marginBottom: "6px",
+            background: "#334155",
+            borderRadius: "10px",
+            cursor: "pointer"
+          }}>
+            <JerseyIcon />
             <span style={{ fontSize: "14px", fontWeight: 500 }}>{player}</span>
           </div>
         ))}
       </div>
 
-      {/* RIGHT SIDE (scrollable on phone) */}
-      <div
-        style={{
-          flex: 1,
-          padding: "10px",
-          overflowY: "auto",
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center"
-        }}
-      >
+      {/* RIGHT SIDE */}
+      <div style={{
+        flex: 1,
+        padding: "10px",
+        overflowY: "auto",
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center"
+      }}>
         <h2 style={{ marginBottom: "8px", fontSize: "18px" }}>7‑Player Formation</h2>
 
-        <div
-          style={{
-            display: "flex",
-            gap: "8px",
-            marginBottom: "8px",
-            width: "100%",
-            justifyContent: "center"
-          }}
-        >
-          <button
-            onClick={undoArrow}
-            style={{
-              padding: "6px 10px",
-              background: "#334155",
-              color: "white",
-              borderRadius: "8px",
-              border: "none",
-              cursor: "pointer",
-              fontSize: "13px"
-            }}
-          >
-            Undo Arrow
-          </button>
+        <div style={{
+          display: "flex",
+          gap: "8px",
+          marginBottom: "8px",
+          width: "100%",
+          justifyContent: "center"
+        }}>
+          <button onClick={undoArrow} style={{
+            padding: "6px 10px",
+            background: "#334155",
+            color: "white",
+            borderRadius: "8px",
+            border: "none",
+            cursor: "pointer",
+            fontSize: "13px"
+          }}>Undo Arrow</button>
 
-          <button
-            onClick={clearArrows}
-            style={{
-              padding: "6px 10px",
-              background: "#b91c1c",
-              color: "white",
-              borderRadius: "8px",
-              border: "none",
-              cursor: "pointer",
-              fontSize: "13px"
-            }}
-          >
-            Clear All Arrows
-          </button>
+          <button onClick={clearArrows} style={{
+            padding: "6px 10px",
+            background: "#b91c1c",
+            color: "white",
+            borderRadius: "8px",
+            border: "none",
+            cursor: "pointer",
+            fontSize: "13px"
+          }}>Clear All Arrows</button>
         </div>
 
-        {/* PHONE‑FRIENDLY PORTRAIT PITCH */}
+        {/* PORTRAIT PITCH */}
         <div
           onMouseDown={start}
           onMouseMove={move}
@@ -203,146 +179,61 @@ export default function PitchBoard() {
         >
           {/* Grass stripes */}
           {[...Array(16)].map((_, i) => (
-            <div
-              key={i}
-              style={{
-                position: "absolute",
-                top: `${i * 6.25}%`,
-                width: "100%",
-                height: "6.25%",
-                background: i % 2 === 0 ? "#166534" : "#15803d"
-              }}
-            />
+            <div key={i} style={{
+              position: "absolute",
+              top: `${i * 6.25}%`,
+              width: "100%",
+              height: "6.25%",
+              background: i % 2 === 0 ? "#166534" : "#15803d"
+            }} />
           ))}
 
-          {/* Pitch lines + GOALS */}
+          {/* Pitch lines */}
           <svg width="100%" height="100%" style={{ position: "absolute" }}>
-            {/* Outer box */}
-            <rect
-              x="5%"
-              y="5%"
-              width="90%"
-              height="90%"
-              fill="none"
-              stroke="white"
-              strokeWidth="3"
-            />
-            {/* Halfway line */}
-            <line
-              x1="50%"
-              y1="5%"
-              x2="50%"
-              y2="95%"
-              stroke="white"
-              strokeWidth="3"
-            />
-            {/* Centre circle */}
-            <circle
-              cx="50%"
-              cy="50%"
-              r="8%"
-              stroke="white"
-              strokeWidth="3"
-              fill="none"
-            />
+            <rect x="5%" y="5%" width="90%" height="90%" fill="none" stroke="white" strokeWidth="3" />
+            <line x1="5%" y1="50%" x2="95%" y2="50%" stroke="white" strokeWidth="3" />
+            <circle cx="50%" cy="50%" r="8%" stroke="white" strokeWidth="3" fill="none" />
 
             {/* TOP GOAL */}
-            <rect
-              x="40%"
-              y="3%"
-              width="20%"
-              height="2%"
-              fill="none"
-              stroke="white"
-              strokeWidth="3"
-            />
+            <rect x="40%" y="3%" width="20%" height="2%" fill="none" stroke="white" strokeWidth="3" />
 
             {/* BOTTOM GOAL */}
-            <rect
-              x="40%"
-              y="95%"
-              width="20%"
-              height="2%"
-              fill="none"
-              stroke="white"
-              strokeWidth="3"
-            />
+            <rect x="40%" y="95%" width="20%" height="2%" fill="none" stroke="white" strokeWidth="3" />
           </svg>
 
           {/* Arrows */}
-          <svg
-            width="100%"
-            height="100%"
-            style={{ position: "absolute", pointerEvents: "none" }}
-          >
+          <svg width="100%" height="100%" style={{ position: "absolute", pointerEvents: "none" }}>
             <defs>
-              <marker
-                id="arrow"
-                markerWidth="10"
-                markerHeight="10"
-                refX="8"
-                refY="3"
-                orient="auto"
-              >
+              <marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto">
                 <polygon points="0 0, 10 3, 0 6" fill="#f43f5e" />
               </marker>
             </defs>
 
             {lines.map((l, i) => (
-              <line
-                key={i}
-                x1={l.x1}
-                y1={l.y1}
-                x2={l.x2}
-                y2={l.y2}
-                stroke="#f43f5e"
-                strokeWidth="4"
-                markerEnd="url(#arrow)"
-              />
+              <line key={i} x1={l.x1} y1={l.y1} x2={l.x2} y2={l.y2} stroke="#f43f5e" strokeWidth="4" markerEnd="url(#arrow)" />
             ))}
 
             {current && (
-              <line
-                x1={current.x1}
-                y1={current.y1}
-                x2={current.x2}
-                y2={current.y2}
-                stroke="orange"
-                strokeWidth="4"
-                markerEnd="url(#arrow)"
-              />
+              <line x1={current.x1} y1={current.y1} x2={current.x2} y2={current.y2} stroke="orange" strokeWidth="4" markerEnd="url(#arrow)" />
             )}
           </svg>
 
           {/* Player positions */}
           {formation.map((pos) => (
-            <Draggable
-              key={pos.id}
-              defaultPosition={{ x: pos.x, y: pos.y }}
-              bounds="parent"
-            >
-              <div
-                onClick={() => setSelectedPos(pos.id)}
-                style={{
-                  position: "absolute",
-                  textAlign: "center",
-                  cursor: "pointer",
-                  padding: "4px"
-                }}
-              >
-                <svg width="32" height="32" viewBox="0 0 24 24" fill="#fff">
-                  <circle cx="12" cy="6" r="4" />
-                  <path d="M12 10c-4 0-7 3-7 7v3h14v-3c0-4-3-7-7-7z" />
-                </svg>
-
-                <div
-                  style={{
-                    fontWeight: 700,
-                    color: "white",
-                    fontSize: "12px",
-                    marginTop: "2px"
-                  }}
-                >
+            <Draggable key={pos.id} defaultPosition={{ x: pos.x, y: pos.y }} bounds="parent">
+              <div onClick={() => setSelectedPos(pos.id)} style={{
+                position: "absolute",
+                textAlign: "center",
+                cursor: "pointer",
+                padding: "4px"
+              }}>
+                <JerseyIcon />
+                <div style={{
+                  fontWeight: 700,
+                  color: "white",
+                  fontSize: "12px",
+                  marginTop: "2px"
+                }}>
                   {assigned[pos.id] || pos.label}
                 </div>
               </div>
@@ -353,4 +244,3 @@ export default function PitchBoard() {
     </div>
   );
 }
-
