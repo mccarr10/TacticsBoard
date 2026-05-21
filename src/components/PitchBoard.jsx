@@ -1,10 +1,30 @@
 import { useState } from 'react';
 import Draggable from 'react-draggable';
 
+// --- FORMATION TEMPLATE (GK - 2 DEF - 3 MID - 1 STR) ---
+const formationTemplate = [
+  { role: 'GK', x: 450, y: 700 },
+  { role: 'DEF', x: 250, y: 520 },
+  { role: 'DEF', x: 650, y: 520 },
+  { role: 'MID', x: 200, y: 330 },
+  { role: 'MID', x: 450, y: 330 },
+  { role: 'MID', x: 700, y: 330 },
+  { role: 'STR', x: 450, y: 150 },
+];
+
 export default function PitchBoard({ team }) {
   const [lines, setLines] = useState([]);
   const [current, setCurrent] = useState(null);
 
+  // --- FORCE EXACTLY 7 STARTERS IN FORMATION ---
+  const starters = team.starters.slice(0, 7).map((p, i) => ({
+    ...p,
+    role: formationTemplate[i].role,
+    x: formationTemplate[i].x,
+    y: formationTemplate[i].y,
+  }));
+
+  // --- ARROW DRAWING ---
   const start = (e) => {
     const r = e.currentTarget.getBoundingClientRect();
     setCurrent({
@@ -30,6 +50,10 @@ export default function PitchBoard({ team }) {
     setCurrent(null);
   };
 
+  // --- CLEAR + UNDO ---
+  const undoArrow = () => setLines(lines.slice(0, -1));
+  const clearArrows = () => setLines([]);
+
   return (
     <div
       className="page"
@@ -39,17 +63,42 @@ export default function PitchBoard({ team }) {
         fontFamily: 'Inter, sans-serif',
       }}
     >
-      <h2
-        style={{
-          marginBottom: '12px',
-          fontWeight: 600,
-          letterSpacing: '0.5px',
-        }}
-      >
-        {team.name}
+      <h2 style={{ marginBottom: '12px', fontWeight: 600 }}>
+        {team.name} — 7‑Player Formation
       </h2>
 
-      {/* Pitch Container */}
+      {/* --- TOOLBAR --- */}
+      <div style={{ marginBottom: '10px', display: 'flex', gap: '10px' }}>
+        <button
+          onClick={undoArrow}
+          style={{
+            padding: '8px 14px',
+            background: '#334155',
+            color: '#fff',
+            borderRadius: '8px',
+            border: 'none',
+            cursor: 'pointer',
+          }}
+        >
+          Undo Arrow
+        </button>
+
+        <button
+          onClick={clearArrows}
+          style={{
+            padding: '8px 14px',
+            background: '#b91c1c',
+            color: '#fff',
+            borderRadius: '8px',
+            border: 'none',
+            cursor: 'pointer',
+          }}
+        >
+          Clear All Arrows
+        </button>
+      </div>
+
+      {/* --- PITCH --- */}
       <div
         className="pitch"
         onMouseDown={start}
@@ -73,8 +122,7 @@ export default function PitchBoard({ team }) {
             key={i}
             style={{
               position: 'absolute',
-              top: `${(i * 10)}%`,
-              left: 0,
+              top: `${i * 10}%`,
               width: '100%',
               height: '10%',
               background: i % 2 === 0 ? '#166534' : '#15803d',
@@ -115,9 +163,8 @@ export default function PitchBoard({ team }) {
           />
         </svg>
 
-        {/* Arrow Drawing Layer */}
+        {/* Arrow Layer */}
         <svg
-          className="overlay"
           style={{
             position: 'absolute',
             top: 0,
@@ -166,67 +213,61 @@ export default function PitchBoard({ team }) {
           )}
         </svg>
 
-        {/* Players */}
-        {team.starters.map((p) => (
+        {/* --- PLAYERS (PERSON ICON + NAME + ROLE) --- */}
+        {starters.map((p) => (
           <Draggable
             key={p.id}
             defaultPosition={{ x: p.x, y: p.y }}
             bounds="parent"
           >
             <div
-              className="player"
               style={{
                 position: 'absolute',
-                padding: '10px 16px',
-                borderRadius: '999px',
-                background: 'linear-gradient(135deg, #1d4ed8, #3b82f6)',
+                textAlign: 'center',
                 color: '#fff',
-                fontWeight: 600,
-                fontSize: '14px',
-                boxShadow: '0 6px 14px rgba(0,0,0,0.45)',
                 cursor: 'grab',
                 userSelect: 'none',
-                transition: 'transform 0.15s ease',
               }}
-              onMouseDown={(e) => (e.currentTarget.style.transform = 'scale(1.08)')}
-              onMouseUp={(e) => (e.currentTarget.style.transform = 'scale(1)')}
             >
-              {p.name}
+              {/* Person Icon */}
+              <svg
+                width="40"
+                height="40"
+                viewBox="0 0 24 24"
+                fill="#fff"
+                style={{
+                  filter: 'drop-shadow(0 4px 6px rgba(0,0,0,0.4))',
+                }}
+              >
+                <circle cx="12" cy="6" r="4" />
+                <path d="M12 10c-4 0-7 3-7 7v3h14v-3c0-4-3-7-7-7z" />
+              </svg>
+
+              {/* Name */}
+              <div style={{ fontWeight: 600, fontSize: '14px' }}>{p.name}</div>
+
+              {/* Role */}
+              <div style={{ fontSize: '11px', opacity: 0.8 }}>{p.role}</div>
             </div>
           </Draggable>
         ))}
       </div>
 
       {/* Subs */}
-      <h3
-        style={{
-          marginTop: '20px',
-          marginBottom: '8px',
-          fontWeight: 600,
-        }}
-      >
+      <h3 style={{ marginTop: '20px', marginBottom: '8px', fontWeight: 600 }}>
         Substitutes
       </h3>
 
-      <div
-        className="players"
-        style={{
-          display: 'flex',
-          flexWrap: 'wrap',
-          gap: '8px',
-        }}
-      >
+      <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
         {team.subs.map((s, i) => (
           <span
             key={i}
-            className="pill"
             style={{
               padding: '6px 12px',
               background: '#1e293b',
               borderRadius: '999px',
               color: '#e2e8f0',
               fontSize: '13px',
-              fontWeight: 500,
             }}
           >
             {s}
