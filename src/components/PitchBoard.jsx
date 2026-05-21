@@ -10,14 +10,15 @@ const squad = [
 
 // --- FIXED 7‑PLAYER FORMATION ---
 const formation = [
-  { id: "GK", label: "Goalkeeper", x: 450, y: 700 },
-  { id: "DEF1", label: "Defender 1", x: 250, y: 520 },
-  { id: "DEF2", label: "Defender 2", x: 650, y: 520 },
-  { id: "MID1", label: "Midfielder 1", x: 200, y: 330 },
-  { id: "MID2", label: "Midfielder 2", x: 450, y: 330 },
-  { id: "MID3", label: "Midfielder 3", x: 700, y: 330 },
-  { id: "STR", label: "Striker", x: 450, y: 150 }
+  { id: "GK", label: "Goalkeeper", x: 450, y: 430 },
+  { id: "DEF1", label: "Defender 1", x: 250, y: 330 },
+  { id: "DEF2", label: "Defender 2", x: 650, y: 330 },
+  { id: "MID1", label: "Midfielder 1", x: 200, y: 220 },
+  { id: "MID2", label: "Midfielder 2", x: 450, y: 220 },
+  { id: "MID3", label: "Midfielder 3", x: 700, y: 220 },
+  { id: "STR", label: "Striker", x: 450, y: 100 }
 ];
+
 
 export default function PitchBoard() {
   const [assigned, setAssigned] = useState({});
