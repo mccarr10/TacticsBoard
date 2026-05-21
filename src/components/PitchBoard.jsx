@@ -11,19 +11,19 @@ const squad = [
 // --- 7‑PLAYER FORMATION (portrait, GK bottom, STR top) ---
 const formation = [
   // GK (bottom)
-  { id: "GK", label: "Goalkeeper", x: 280, y: 700 },
+  { id: "GK", label: "Goalkeeper", x: 180, y: 620 },
 
   // 2 Defenders
-  { id: "DEF1", label: "Defender 1", x: 180, y: 550 },
-  { id: "DEF2", label: "Defender 2", x: 380, y: 550 },
+  { id: "DEF1", label: "Defender 1", x: 110, y: 500 },
+  { id: "DEF2", label: "Defender 2", x: 250, y: 500 },
 
   // 3 Midfielders
-  { id: "MID1", label: "Midfielder 1", x: 150, y: 380 },
-  { id: "MID2", label: "Midfielder 2", x: 280, y: 380 },
-  { id: "MID3", label: "Midfielder 3", x: 410, y: 380 },
+  { id: "MID1", label: "Midfielder 1", x: 90, y: 370 },
+  { id: "MID2", label: "Midfielder 2", x: 180, y: 370 },
+  { id: "MID3", label: "Midfielder 3", x: 270, y: 370 },
 
   // Striker (top)
-  { id: "STR", label: "Striker", x: 280, y: 200 }
+  { id: "STR", label: "Striker", x: 180, y: 230 }
 ];
 
 export default function PitchBoard() {
@@ -67,38 +67,45 @@ export default function PitchBoard() {
   const clearArrows = () => setLines([]);
 
   return (
-    <div style={{ display: "flex", height: "100vh", fontFamily: "Inter, sans-serif" }}>
-
+    <div
+      style={{
+        display: "flex",
+        height: "100vh",
+        fontFamily: "Inter, sans-serif",
+        overflow: "hidden"
+      }}
+    >
       {/* LEFT PANEL */}
       <div
         style={{
-          width: "260px",
+          width: "230px",
           background: "#1e293b",
           color: "white",
-          padding: "16px",
+          padding: "12px",
           overflowY: "auto",
-          borderRight: "4px solid #0f172a"
+          borderRight: "3px solid #0f172a"
         }}
       >
-        <h2 style={{ marginBottom: "12px" }}>Squad List</h2>
+        <h2 style={{ marginBottom: "10px", fontSize: "18px" }}>Squad List</h2>
 
         {selectedPos && (
           <div
             style={{
               background: "#facc15",
               color: "#000",
-              padding: "10px",
+              padding: "8px",
               borderRadius: "8px",
-              marginBottom: "12px",
+              marginBottom: "10px",
               fontWeight: 700,
-              textAlign: "center"
+              textAlign: "center",
+              fontSize: "14px"
             }}
           >
             Assigning to: {selectedPos}
           </div>
         )}
 
-        <h3 style={{ marginBottom: "8px" }}>Players</h3>
+        <h3 style={{ marginBottom: "6px", fontSize: "15px" }}>Players</h3>
 
         {squad.map((player) => (
           <div
@@ -107,38 +114,56 @@ export default function PitchBoard() {
             style={{
               display: "flex",
               alignItems: "center",
-              gap: "10px",
-              padding: "10px",
-              marginBottom: "8px",
+              gap: "8px",
+              padding: "8px",
+              marginBottom: "6px",
               background: "#334155",
               borderRadius: "10px",
               cursor: "pointer"
             }}
           >
-            <svg width="28" height="28" viewBox="0 0 24 24" fill="#fff">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="#fff">
               <circle cx="12" cy="6" r="4" />
               <path d="M12 10c-4 0-7 3-7 7v3h14v-3c0-4-3-7-7-7z" />
             </svg>
 
-            <span style={{ fontSize: "15px", fontWeight: 500 }}>{player}</span>
+            <span style={{ fontSize: "14px", fontWeight: 500 }}>{player}</span>
           </div>
         ))}
       </div>
 
-      {/* RIGHT SIDE */}
-      <div style={{ flex: 1, padding: "20px" }}>
-        <h2 style={{ marginBottom: "10px" }}>7‑Player Formation</h2>
+      {/* RIGHT SIDE (scrollable on phone) */}
+      <div
+        style={{
+          flex: 1,
+          padding: "10px",
+          overflowY: "auto",
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center"
+        }}
+      >
+        <h2 style={{ marginBottom: "8px", fontSize: "18px" }}>7‑Player Formation</h2>
 
-        <div style={{ display: "flex", gap: "10px", marginBottom: "10px" }}>
+        <div
+          style={{
+            display: "flex",
+            gap: "8px",
+            marginBottom: "8px",
+            width: "100%",
+            justifyContent: "center"
+          }}
+        >
           <button
             onClick={undoArrow}
             style={{
-              padding: "8px 14px",
+              padding: "6px 10px",
               background: "#334155",
               color: "white",
               borderRadius: "8px",
               border: "none",
-              cursor: "pointer"
+              cursor: "pointer",
+              fontSize: "13px"
             }}
           >
             Undo Arrow
@@ -147,19 +172,20 @@ export default function PitchBoard() {
           <button
             onClick={clearArrows}
             style={{
-              padding: "8px 14px",
+              padding: "6px 10px",
               background: "#b91c1c",
               color: "white",
               borderRadius: "8px",
               border: "none",
-              cursor: "pointer"
+              cursor: "pointer",
+              fontSize: "13px"
             }}
           >
             Clear All Arrows
           </button>
         </div>
 
-        {/* PORTRAIT PITCH (no rotation) */}
+        {/* PHONE‑FRIENDLY PORTRAIT PITCH */}
         <div
           onMouseDown={start}
           onMouseMove={move}
@@ -167,13 +193,12 @@ export default function PitchBoard() {
           style={{
             position: "relative",
             width: "100%",
-            maxWidth: "600px",
+            maxWidth: "360px",
             aspectRatio: "9/16",
             background: "#14532d",
             borderRadius: "16px",
             overflow: "hidden",
-            boxShadow: "0 18px 45px rgba(0,0,0,0.45)",
-            margin: "0 auto"
+            boxShadow: "0 12px 30px rgba(0,0,0,0.45)"
           }}
         >
           {/* Grass stripes */}
@@ -192,6 +217,7 @@ export default function PitchBoard() {
 
           {/* Pitch lines + GOALS */}
           <svg width="100%" height="100%" style={{ position: "absolute" }}>
+            {/* Outer box */}
             <rect
               x="5%"
               y="5%"
@@ -201,6 +227,7 @@ export default function PitchBoard() {
               stroke="white"
               strokeWidth="3"
             />
+            {/* Halfway line */}
             <line
               x1="50%"
               y1="5%"
@@ -209,6 +236,7 @@ export default function PitchBoard() {
               stroke="white"
               strokeWidth="3"
             />
+            {/* Centre circle */}
             <circle
               cx="50%"
               cy="50%"
@@ -299,15 +327,22 @@ export default function PitchBoard() {
                   position: "absolute",
                   textAlign: "center",
                   cursor: "pointer",
-                  padding: "6px"
+                  padding: "4px"
                 }}
               >
-                <svg width="40" height="40" viewBox="0 0 24 24" fill="#fff">
+                <svg width="32" height="32" viewBox="0 0 24 24" fill="#fff">
                   <circle cx="12" cy="6" r="4" />
                   <path d="M12 10c-4 0-7 3-7 7v3h14v-3c0-4-3-7-7-7z" />
                 </svg>
 
-                <div style={{ fontWeight: 700, color: "white" }}>
+                <div
+                  style={{
+                    fontWeight: 700,
+                    color: "white",
+                    fontSize: "12px",
+                    marginTop: "2px"
+                  }}
+                >
                   {assigned[pos.id] || pos.label}
                 </div>
               </div>
@@ -318,3 +353,4 @@ export default function PitchBoard() {
     </div>
   );
 }
+
