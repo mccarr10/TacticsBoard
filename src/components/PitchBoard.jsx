@@ -20,13 +20,13 @@ const JerseyIcon = () => (
 
 // --- 7‑PLAYER FORMATION (portrait, GK bottom, STR top) ---
 const formation = [
-  { id: "GK", label: "Goalkeeper", x: 160, y: 620 },
-  { id: "DEF1", label: "Defender 1", x: 90, y: 500 },
-  { id: "DEF2", label: "Defender 2", x: 230, y: 500 },
-  { id: "MID1", label: "Midfielder 1", x: 70, y: 370 },
-  { id: "MID2", label: "Midfielder 2", x: 160, y: 370 },
-  { id: "MID3", label: "Midfielder 3", x: 250, y: 370 },
-  { id: "STR", label: "Striker", x: 160, y: 230 }
+  { id: "GK", label: "Goalkeeper", x: 180, y: 700 },
+  { id: "DEF1", label: "Defender 1", x: 100, y: 560 },
+  { id: "DEF2", label: "Defender 2", x: 260, y: 560 },
+  { id: "MID1", label: "Midfielder 1", x: 80, y: 420 },
+  { id: "MID2", label: "Midfielder 2", x: 180, y: 420 },
+  { id: "MID3", label: "Midfielder 3", x: 280, y: 420 },
+  { id: "STR", label: "Striker", x: 180, y: 260 }
 ];
 
 export default function PitchBoard() {
@@ -169,12 +169,13 @@ export default function PitchBoard() {
           style={{
             position: "relative",
             width: "100%",
-            maxWidth: "360px",
+            maxWidth: "550px",
             aspectRatio: "9/16",
             background: "#14532d",
             borderRadius: "16px",
             overflow: "hidden",
-            boxShadow: "0 12px 30px rgba(0,0,0,0.45)"
+            boxShadow: "0 12px 30px rgba(0,0,0,0.45)",
+            margin: "0 auto"
           }}
         >
           {/* Grass stripes */}
@@ -188,14 +189,25 @@ export default function PitchBoard() {
             }} />
           ))}
 
-          {/* Pitch lines */}
+          {/* Pitch lines + GOAL BOXES */}
           <svg width="100%" height="100%" style={{ position: "absolute" }}>
+            {/* Outer box */}
             <rect x="5%" y="5%" width="90%" height="90%" fill="none" stroke="white" strokeWidth="3" />
+
+            {/* Halfway line */}
             <line x1="5%" y1="50%" x2="95%" y2="50%" stroke="white" strokeWidth="3" />
+
+            {/* Centre circle */}
             <circle cx="50%" cy="50%" r="8%" stroke="white" strokeWidth="3" fill="none" />
+
+            {/* TOP GOAL BOX */}
+            <rect x="30%" y="5%" width="40%" height="10%" fill="none" stroke="white" strokeWidth="3" />
 
             {/* TOP GOAL */}
             <rect x="40%" y="3%" width="20%" height="2%" fill="none" stroke="white" strokeWidth="3" />
+
+            {/* BOTTOM GOAL BOX */}
+            <rect x="30%" y="85%" width="40%" height="10%" fill="none" stroke="white" strokeWidth="3" />
 
             {/* BOTTOM GOAL */}
             <rect x="40%" y="95%" width="20%" height="2%" fill="none" stroke="white" strokeWidth="3" />
