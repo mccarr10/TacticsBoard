@@ -1,28 +1,36 @@
-import { useState } from 'react';
-import Draggable from 'react-draggable';
+import { useState } from "react";
+import Draggable from "react-draggable";
 
-// --- FORMATION TEMPLATE (GK - 2 DEF - 3 MID - 1 STR) ---
-const formationTemplate = [
-  { role: 'GK', x: 450, y: 700 },
-  { role: 'DEF', x: 250, y: 520 },
-  { role: 'DEF', x: 650, y: 520 },
-  { role: 'MID', x: 200, y: 330 },
-  { role: 'MID', x: 450, y: 330 },
-  { role: 'MID', x: 700, y: 330 },
-  { role: 'STR', x: 450, y: 150 },
+// --- FULL SQUAD LIST ---
+const squad = [
+  "John", "Lucas", "Alex", "Ronan", "Ruairi", "Jules", "Robbie",
+  "Fionn", "Josh", "Sam", "Mason", "Marcel", "Alan", "Darragh",
+  "Sonny", "Charlie", "Cian"
 ];
 
-export default function PitchBoard({ team }) {
+// --- FIXED 7‑PLAYER FORMATION ---
+const formation = [
+  { id: "GK", label: "Goalkeeper", x: 450, y: 700 },
+  { id: "DEF1", label: "Defender 1", x: 250, y: 520 },
+  { id: "DEF2", label: "Defender 2", x: 650, y: 520 },
+  { id: "MID1", label: "Midfielder 1", x: 200, y: 330 },
+  { id: "MID2", label: "Midfielder 2", x: 450, y: 330 },
+  { id: "MID3", label: "Midfielder 3", x: 700, y: 330 },
+  { id: "STR", label: "Striker", x: 450, y: 150 }
+];
+
+export default function PitchBoard() {
+  const [assigned, setAssigned] = useState({});
+  const [selectedPos, setSelectedPos] = useState(null);
   const [lines, setLines] = useState([]);
   const [current, setCurrent] = useState(null);
 
-  // --- FORCE EXACTLY 7 STARTERS IN FORMATION ---
-  const starters = team.starters.slice(0, 7).map((p, i) => ({
-    ...p,
-    role: formationTemplate[i].role,
-    x: formationTemplate[i].x,
-    y: formationTemplate[i].y,
-  }));
+  // --- ASSIGN PLAYER TO POSITION ---
+  const assignPlayer = (player) => {
+    if (!selectedPos) return;
+    setAssigned({ ...assigned, [selectedPos]: player });
+    setSelectedPos(null);
+  };
 
   // --- ARROW DRAWING ---
   const start = (e) => {
@@ -31,7 +39,7 @@ export default function PitchBoard({ team }) {
       x1: e.clientX - r.left,
       y1: e.clientY - r.top,
       x2: e.clientX - r.left,
-      y2: e.clientY - r.top,
+      y2: e.clientY - r.top
     });
   };
 
@@ -41,7 +49,7 @@ export default function PitchBoard({ team }) {
     setCurrent({
       ...current,
       x2: e.clientX - r.left,
-      y2: e.clientY - r.top,
+      y2: e.clientY - r.top
     });
   };
 
@@ -50,229 +58,272 @@ export default function PitchBoard({ team }) {
     setCurrent(null);
   };
 
-  // --- CLEAR + UNDO ---
   const undoArrow = () => setLines(lines.slice(0, -1));
   const clearArrows = () => setLines([]);
 
   return (
-    <div
-      className="page"
-      style={{
-        padding: '20px',
-        color: '#f1f5f9',
-        fontFamily: 'Inter, sans-serif',
-      }}
-    >
-      <h2 style={{ marginBottom: '12px', fontWeight: 600 }}>
-        {team.name} — 7‑Player Formation
-      </h2>
+    <div style={{ display: "flex", height: "100vh", fontFamily: "Inter, sans-serif" }}>
 
-      {/* --- TOOLBAR --- */}
-      <div style={{ marginBottom: '10px', display: 'flex', gap: '10px' }}>
-        <button
-          onClick={undoArrow}
-          style={{
-            padding: '8px 14px',
-            background: '#334155',
-            color: '#fff',
-            borderRadius: '8px',
-            border: 'none',
-            cursor: 'pointer',
-          }}
-        >
-          Undo Arrow
-        </button>
-
-        <button
-          onClick={clearArrows}
-          style={{
-            padding: '8px 14px',
-            background: '#b91c1c',
-            color: '#fff',
-            borderRadius: '8px',
-            border: 'none',
-            cursor: 'pointer',
-          }}
-        >
-          Clear All Arrows
-        </button>
-      </div>
-
-      {/* --- PITCH --- */}
+      {/* --- LEFT PANEL (ALWAYS VISIBLE) --- */}
       <div
-        className="pitch"
-        onMouseDown={start}
-        onMouseMove={move}
-        onMouseUp={end}
         style={{
-          position: 'relative',
-          width: '100%',
-          maxWidth: '900px',
-          aspectRatio: '16/9',
-          margin: '0 auto 20px auto',
-          borderRadius: '16px',
-          overflow: 'hidden',
-          background: '#14532d',
-          boxShadow: '0 18px 45px rgba(0,0,0,0.45)',
+          width: "260px",
+          background: "#1e293b",
+          color: "white",
+          padding: "16px",
+          overflowY: "auto",
+          borderRight: "4px solid #0f172a"
         }}
       >
-        {/* Grass stripes */}
-        {[...Array(10)].map((_, i) => (
+        <h2 style={{ marginBottom: "12px" }}>Squad List</h2>
+
+        {selectedPos && (
           <div
-            key={i}
             style={{
-              position: 'absolute',
-              top: `${i * 10}%`,
-              width: '100%',
-              height: '10%',
-              background: i % 2 === 0 ? '#166534' : '#15803d',
+              background: "#facc15",
+              color: "#000",
+              padding: "10px",
+              borderRadius: "8px",
+              marginBottom: "12px",
+              fontWeight: 700,
+              textAlign: "center"
             }}
-          />
+          >
+            Assigning to: {selectedPos}
+          </div>
+        )}
+
+        <h3 style={{ marginBottom: "8px" }}>Players</h3>
+
+        {squad.map((player) => (
+          <div
+            key={player}
+            onClick={() => assignPlayer(player)}
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: "10px",
+              padding: "10px",
+              marginBottom: "8px",
+              background: "#334155",
+              borderRadius: "10px",
+              cursor: "pointer",
+              transition: "0.2s"
+            }}
+          >
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="#fff">
+              <circle cx="12" cy="6" r="4" />
+              <path d="M12 10c-4 0-7 3-7 7v3h14v-3c0-4-3-7-7-7z" />
+            </svg>
+
+            <span style={{ fontSize: "15px", fontWeight: 500 }}>{player}</span>
+          </div>
         ))}
+      </div>
 
-        {/* Pitch Lines */}
-        <svg
-          width="100%"
-          height="100%"
-          style={{ position: 'absolute', top: 0, left: 0 }}
-        >
-          <rect
-            x="2%"
-            y="2%"
-            width="96%"
-            height="96%"
-            fill="none"
-            stroke="#ffffff"
-            strokeWidth="3"
-          />
-          <line
-            x1="50%"
-            y1="2%"
-            x2="50%"
-            y2="98%"
-            stroke="#ffffff"
-            strokeWidth="3"
-          />
-          <circle
-            cx="50%"
-            cy="50%"
-            r="6%"
-            stroke="#ffffff"
-            strokeWidth="3"
-            fill="none"
-          />
-        </svg>
+      {/* --- RIGHT SIDE: PITCH + CONTROLS --- */}
+      <div style={{ flex: 1, padding: "20px" }}>
+        <h2 style={{ marginBottom: "10px" }}>7‑Player Formation</h2>
 
-        {/* Arrow Layer */}
-        <svg
+        <div style={{ display: "flex", gap: "10px", marginBottom: "10px" }}>
+          <button
+            onClick={undoArrow}
+            style={{
+              padding: "8px 14px",
+              background: "#334155",
+              color: "white",
+              borderRadius: "8px",
+              border: "none",
+              cursor: "pointer"
+            }}
+          >
+            Undo Arrow
+          </button>
+
+          <button
+            onClick={clearArrows}
+            style={{
+              padding: "8px 14px",
+              background: "#b91c1c",
+              color: "white",
+              borderRadius: "8px",
+              border: "none",
+              cursor: "pointer"
+            }}
+          >
+            Clear All Arrows
+          </button>
+        </div>
+
+        <div
+          onMouseDown={start}
+          onMouseMove={move}
+          onMouseUp={end}
           style={{
-            position: 'absolute',
-            top: 0,
-            left: 0,
-            width: '100%',
-            height: '100%',
-            pointerEvents: 'none',
+            position: "relative",
+            width: "100%",
+            maxWidth: "900px",
+            aspectRatio: "16/9",
+            background: "#14532d",
+            borderRadius: "16px",
+            overflow: "hidden",
+            boxShadow: "0 18px 45px rgba(0,0,0,0.45)"
           }}
         >
-          <defs>
-            <marker
-              id="arrow"
-              markerWidth="10"
-              markerHeight="10"
-              refX="8"
-              refY="3"
-              orient="auto"
-            >
-              <polygon points="0 0, 10 3, 0 6" fill="#f43f5e" />
-            </marker>
-          </defs>
-
-          {lines.map((l, i) => (
-            <line
+          {/* Grass stripes */}
+          {[...Array(10)].map((_, i) => (
+            <div
               key={i}
-              x1={l.x1}
-              y1={l.y1}
-              x2={l.x2}
-              y2={l.y2}
-              stroke="#f43f5e"
-              strokeWidth="4"
-              markerEnd="url(#arrow)"
+              style={{
+                position: "absolute",
+                top: `${i * 10}%`,
+                width: "100%",
+                height: "10%",
+                background: i % 2 === 0 ? "#166534" : "#15803d"
+              }}
             />
           ))}
 
-          {current && (
-            <line
-              x1={current.x1}
-              y1={current.y1}
-              x2={current.x2}
-              y2={current.y2}
-              stroke="orange"
-              strokeWidth="4"
-              markerEnd="url(#arrow)"
+          {/* Pitch lines + GOALS */}
+          <svg width="100%" height="100%" style={{ position: "absolute" }}>
+            <rect
+              x="2%"
+              y="2%"
+              width="96%"
+              height="96%"
+              fill="none"
+              stroke="white"
+              strokeWidth="3"
             />
-          )}
-        </svg>
+            <line
+              x1="50%"
+              y1="2%"
+              x2="50%"
+              y2="98%"
+              stroke="white"
+              strokeWidth="3"
+            />
+            <circle
+              cx="50%"
+              cy="50%"
+              r="6%"
+              stroke="white"
+              strokeWidth="3"
+              fill="none"
+            />
 
-        {/* --- PLAYERS (PERSON ICON + NAME + ROLE) --- */}
-        {starters.map((p) => (
-          <Draggable
-            key={p.id}
-            defaultPosition={{ x: p.x, y: p.y }}
-            bounds="parent"
+            {/* LEFT GOAL */}
+            <rect
+              x="0.5%"
+              y="40%"
+              width="1.5%"
+              height="20%"
+              fill="none"
+              stroke="white"
+              strokeWidth="3"
+            />
+            <line
+              x1="0.5%"
+              y1="40%"
+              x2="2%"
+              y2="40%"
+              stroke="white"
+              strokeWidth="3"
+            />
+
+            {/* RIGHT GOAL */}
+            <rect
+              x="98%"
+              y="40%"
+              width="1.5%"
+              height="20%"
+              fill="none"
+              stroke="white"
+              strokeWidth="3"
+            />
+            <line
+              x1="98%"
+              y1="40%"
+              x2="96.5%"
+              y2="40%"
+              stroke="white"
+              strokeWidth="3"
+            />
+          </svg>
+
+          {/* Arrows */}
+          <svg
+            width="100%"
+            height="100%"
+            style={{ position: "absolute", pointerEvents: "none" }}
           >
-            <div
-              style={{
-                position: 'absolute',
-                textAlign: 'center',
-                color: '#fff',
-                cursor: 'grab',
-                userSelect: 'none',
-              }}
+            <defs>
+              <marker
+                id="arrow"
+                markerWidth="10"
+                markerHeight="10"
+                refX="8"
+                refY="3"
+                orient="auto"
+              >
+                <polygon points="0 0, 10 3, 0 6" fill="#f43f5e" />
+              </marker>
+            </defs>
+
+            {lines.map((l, i) => (
+              <line
+                key={i}
+                x1={l.x1}
+                y1={l.y1}
+                x2={l.x2}
+                y2={l.y2}
+                stroke="#f43f5e"
+                strokeWidth="4"
+                markerEnd="url(#arrow)"
+              />
+            ))}
+
+            {current && (
+              <line
+                x1={current.x1}
+                y1={current.y1}
+                x2={current.x2}
+                y2={current.y2}
+                stroke="orange"
+                strokeWidth="4"
+                markerEnd="url(#arrow)"
+              />
+            )}
+          </svg>
+
+          {/* Player positions */}
+          {formation.map((pos) => (
+            <Draggable
+              key={pos.id}
+              defaultPosition={{ x: pos.x, y: pos.y }}
+              bounds="parent"
             >
-              {/* Person Icon */}
-              <svg
-                width="40"
-                height="40"
-                viewBox="0 0 24 24"
-                fill="#fff"
+              <div
+                onClick={() => setSelectedPos(pos.id)}
                 style={{
-                  filter: 'drop-shadow(0 4px 6px rgba(0,0,0,0.4))',
+                  position: "absolute",
+                  textAlign: "center",
+                  cursor: "pointer",
+                  padding: "6px"
                 }}
               >
-                <circle cx="12" cy="6" r="4" />
-                <path d="M12 10c-4 0-7 3-7 7v3h14v-3c0-4-3-7-7-7z" />
-              </svg>
+                <svg width="40" height="40" viewBox="0 0 24 24" fill="#fff">
+                  <circle cx="12" cy="6" r="4" />
+                  <path d="M12 10c-4 0-7 3-7 7v3h14v-3c0-4-3-7-7-7z" />
+                </svg>
 
-              {/* Name */}
-              <div style={{ fontWeight: 600, fontSize: '14px' }}>{p.name}</div>
-
-              {/* Role */}
-              <div style={{ fontSize: '11px', opacity: 0.8 }}>{p.role}</div>
-            </div>
-          </Draggable>
-        ))}
-      </div>
-
-      {/* Subs */}
-      <h3 style={{ marginTop: '20px', marginBottom: '8px', fontWeight: 600 }}>
-        Substitutes
-      </h3>
-
-      <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
-        {team.subs.map((s, i) => (
-          <span
-            key={i}
-            style={{
-              padding: '6px 12px',
-              background: '#1e293b',
-              borderRadius: '999px',
-              color: '#e2e8f0',
-              fontSize: '13px',
-            }}
-          >
-            {s}
-          </span>
-        ))}
+                <div style={{ fontWeight: 700, color: "white" }}>
+                  {assigned[pos.id] || pos.label}
+                </div>
+              </div>
+            </Draggable>
+          ))}
+        </div>
       </div>
     </div>
   );
