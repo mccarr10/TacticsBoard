@@ -16,13 +16,13 @@ const JerseyIcon = ({ size = 52, color = "white" }) => (
 );
 
 const FORMATION = [
-  { id: "GK", label: "Goalkeeper", xPct: 0.50, yPct: 0.88 },   // Bottom
+  { id: "GK", label: "Goalkeeper", xPct: 0.50, yPct: 0.88 },
   { id: "DEF1", label: "Defender 1", xPct: 0.27, yPct: 0.68 },
   { id: "DEF2", label: "Defender 2", xPct: 0.73, yPct: 0.68 },
   { id: "CM", label: "Central Mid", xPct: 0.50, yPct: 0.48 },
   { id: "WM1", label: "Wide Mid 1", xPct: 0.14, yPct: 0.36 },
   { id: "WM2", label: "Wide Mid 2", xPct: 0.86, yPct: 0.36 },
-  { id: "STR", label: "Striker", xPct: 0.50, yPct: 0.16 },     // Top
+  { id: "STR", label: "Striker", xPct: 0.50, yPct: 0.16 },
 ];
 
 const DRAG_THRESHOLD = 8;
@@ -47,7 +47,6 @@ export default function TacticalBoard() {
     const ah = wrapperRef.current.clientHeight;
 
     let w, h;
-
     if (aw / ah < 0.72) {
       w = Math.min(aw * 0.96, 620);
       h = w * 1.42;
@@ -205,7 +204,7 @@ export default function TacticalBoard() {
         {/* PITCH */}
         <div ref={wrapperRef} style={{
           flex: 1, display: "flex", justifyContent: "center", alignItems: "center",
-          padding: "12px", background: "#020617", position: "relative",
+          padding: "12px", background: "#020617",
         }}>
           {ready && w > 0 && (
             <div 
@@ -240,32 +239,37 @@ export default function TacticalBoard() {
                   </marker>
                 </defs>
 
+                {/* Outer Pitch */}
                 <rect x={w*0.035} y={h*0.025} width={w*0.93} height={h*0.95}
                   fill="none" stroke="#f8fafc" strokeWidth="4" />
 
-                <line x1={w*0.035} y1={h*0.5} x2={w*0.965} y2={h*0.5}
-                  stroke="#f8fafc" strokeWidth="4" />
-
+                {/* Halfway Line + Center Circle */}
+                <line x1={w*0.035} y1={h*0.5} x2={w*0.965} y2={h*0.5} stroke="#f8fafc" strokeWidth="4" />
                 <circle cx={w*0.5} cy={h*0.5} r={w*0.135} fill="none" stroke="#f8fafc" strokeWidth="4" />
 
-                {/* Penalty Areas */}
-                <rect x={w*0.035} y={h*0.26} width={w*0.28} height={h*0.48}
+                {/* === BOTTOM GOAL (Own Goal) === */}
+                {/* Bottom Penalty Area */}
+                <rect x={w*0.035} y={h*0.52} width={w*0.28} height={h*0.43}
                   fill="none" stroke="#f8fafc" strokeWidth="3.5" />
-                <rect x={w*0.685} y={h*0.26} width={w*0.28} height={h*0.48}
+                {/* Bottom Goal Area */}
+                <rect x={w*0.035} y={h*0.64} width={w*0.16} height={h*0.26}
                   fill="none" stroke="#f8fafc" strokeWidth="3.5" />
-
-                {/* Goal Areas */}
-                <rect x={w*0.035} y={h*0.37} width={w*0.16} height={h*0.26}
-                  fill="none" stroke="#f8fafc" strokeWidth="3.5" />
-                <rect x={w*0.805} y={h*0.37} width={w*0.16} height={h*0.26}
-                  fill="none" stroke="#f8fafc" strokeWidth="3.5" />
-
-                {/* Goals */}
-                <line x1={w*0.035} y1={h*0.41} x2={w*0.035} y2={h*0.59}
-                  stroke="#f8fafc" strokeWidth="9" strokeLinecap="round" />
-                <line x1={w*0.965} y1={h*0.41} x2={w*0.965} y2={h*0.59}
+                {/* Bottom Goal */}
+                <line x1={w*0.035} y1={h*0.67} x2={w*0.035} y2={h*0.83}
                   stroke="#f8fafc" strokeWidth="9" strokeLinecap="round" />
 
+                {/* === TOP GOAL (Opponent Goal) === */}
+                {/* Top Penalty Area */}
+                <rect x={w*0.035} y={h*0.05} width={w*0.28} height={h*0.43}
+                  fill="none" stroke="#f8fafc" strokeWidth="3.5" />
+                {/* Top Goal Area */}
+                <rect x={w*0.035} y={h*0.10} width={w*0.16} height={h*0.26}
+                  fill="none" stroke="#f8fafc" strokeWidth="3.5" />
+                {/* Top Goal */}
+                <line x1={w*0.965} y1={h*0.17} x2={w*0.965} y2={h*0.33}
+                  stroke="#f8fafc" strokeWidth="9" strokeLinecap="round" />
+
+                {/* Drawn Lines */}
                 {lines.map((l, i) => (
                   <line key={i} x1={l.x1} y1={l.y1} x2={l.x2} y2={l.y2}
                     stroke="#fde047" strokeWidth="5.5" strokeLinecap="round" markerEnd="url(#arrow)" />
@@ -278,6 +282,7 @@ export default function TacticalBoard() {
                 )}
               </svg>
 
+              {/* Players */}
               {players.map((pos) => (
                 <Draggable
                   key={pos.id}
@@ -309,7 +314,7 @@ export default function TacticalBoard() {
           )}
         </div>
 
-        {/* Bottom Sheet (unchanged) */}
+        {/* Bottom Sheet */}
         {sheetOpen && <div onClick={() => { setSheetOpen(false); setSelectedPos(null); }}
           style={{ position: "absolute", inset: 0, background: "rgba(2,6,23,0.75)", zIndex: 40 }} />}
 
@@ -333,7 +338,6 @@ export default function TacticalBoard() {
               {squad.map((player) => {
                 const isAssigned = Object.values(assigned).includes(player);
                 const isHere = selectedPos && assigned[selectedPos] === player;
-
                 return (
                   <div
                     key={player}
@@ -360,3 +364,4 @@ export default function TacticalBoard() {
       </div>
     </div>
   );
+}
