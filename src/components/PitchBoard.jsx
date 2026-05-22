@@ -8,17 +8,22 @@ const squad = [
   "Sonny", "Charlie", "Cian"
 ];
 
-// --- PLAYER AND FORMATION DETAILS ---
+// --- UPDATED FORMATION TO MATCH IMAGE ---
 const initialFormation = [
-  { id: "GK", label: "Goalkeeper", x: 180, y: 700 },
-  { id: "DEF1", label: "Defender 1", x: 100, y: 560 },
-  { id: "DEF2", label: "Defender 2", x: 260, y: 560 },
-  { id: "MID1", label: "Midfielder 1", x: 100, y: 420 },
-  { id: "MID2", label: "Midfielder 2", x: 180, y: 420 },
-  { id: "MID3", label: "Midfielder 3", x: 260, y: 420 },
-  { id: "STR", label: "Striker", x: 180, y: 260 }
+  { id: "GK", label: "Goalkeeper", x: 180, y: 720 },
+
+  { id: "DEF1", label: "Defender 1", x: 110, y: 560 },
+  { id: "DEF2", label: "Defender 2", x: 250, y: 560 },
+
+  { id: "CM", label: "Central Midfielder", x: 180, y: 420 },
+
+  { id: "WM1", label: "Wide Midfielder 1", x: 110, y: 300 },
+  { id: "WM2", label: "Wide Midfielder 2", x: 250, y: 300 },
+
+  { id: "STR", label: "Striker", x: 180, y: 160 }
 ];
 
+// --- OPPOSITION FORMATION (unchanged) ---
 const initialOppositionFormation = [
   { id: "OPP1", label: "Opposition 1", x: 180, y: 40 },
   { id: "OPP2", label: "Opposition 2", x: 100, y: 180 },
@@ -88,7 +93,6 @@ export default function PitchBoard() {
   const undoArrow = () => setLines(lines.slice(0, -1));
   const clearArrows = () => setLines([]);
 
-  // Update player position during drag
   const handleDrag = (posId, data) => {
     const updatedFormation = formation.map((pos) =>
       pos.id === posId ? { ...pos, x: data.x, y: data.y } : pos
@@ -98,6 +102,7 @@ export default function PitchBoard() {
 
   return (
     <div style={{ display: "flex", height: "100vh", fontFamily: "Inter, sans-serif" }}>
+      
       {/* Sidebar */}
       <div style={{
         width: "230px",
@@ -188,6 +193,7 @@ export default function PitchBoard() {
             boxShadow: "0 12px 28px rgba(0,0,0,0.4)"
           }}
         >
+
           {/* Grass Stripes */}
           {[...Array(16)].map((_, i) => (
             <div key={i} style={{
@@ -198,6 +204,15 @@ export default function PitchBoard() {
               background: i % 2 === 0 ? "#166534" : "#15803d"
             }} />
           ))}
+
+          {/* Pitch Lines */}
+          <svg width="100%" height="100%" style={{ position: "absolute", top: 0, left: 0 }}>
+            <rect x="5%" y="5%" width="90%" height="90%" stroke="white" strokeWidth="4" fill="none" />
+            <line x1="50%" y1="5%" x2="50%" y2="95%" stroke="white" strokeWidth="3" />
+            <circle cx="50%" cy="50%" r="12%" stroke="white" strokeWidth="3" fill="none" />
+            <rect x="30%" y="5%" width="40%" height="12%" stroke="white" strokeWidth="3" fill="none" />
+            <rect x="30%" y="83%" width="40%" height="12%" stroke="white" strokeWidth="3" fill="none" />
+          </svg>
 
           {/* Player Formation */}
           {formation.map((pos) => (
@@ -224,6 +239,7 @@ export default function PitchBoard() {
               </div>
             </Draggable>
           ))}
+
         </div>
       </div>
     </div>
