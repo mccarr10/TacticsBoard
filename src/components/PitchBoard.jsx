@@ -240,34 +240,65 @@ export default function TacticalBoard() {
                 </defs>
 
                 {/* Outer Pitch */}
-                <rect x={w*0.035} y={h*0.025} width={w*0.93} height={h*0.95}
-                  fill="none" stroke="#f8fafc" strokeWidth="4" />
+                <rect 
+                  x={w*0.035} y={h*0.025} 
+                  width={w*0.93} height={h*0.95}
+                  fill="none" stroke="#f8fafc" strokeWidth="4" 
+                />
 
-                {/* Halfway Line + Center Circle */}
-                <line x1={w*0.035} y1={h*0.5} x2={w*0.965} y2={h*0.5} stroke="#f8fafc" strokeWidth="4" />
-                <circle cx={w*0.5} cy={h*0.5} r={w*0.135} fill="none" stroke="#f8fafc" strokeWidth="4" />
+                {/* Halfway Line */}
+                <line 
+                  x1={w*0.035} y1={h*0.5} 
+                  x2={w*0.965} y2={h*0.5} 
+                  stroke="#f8fafc" strokeWidth="4" 
+                />
 
-                {/* === BOTTOM GOAL (Own Goal) === */}
-                {/* Bottom Penalty Area */}
-                <rect x={w*0.035} y={h*0.52} width={w*0.28} height={h*0.43}
-                  fill="none" stroke="#f8fafc" strokeWidth="3.5" />
-                {/* Bottom Goal Area */}
-                <rect x={w*0.035} y={h*0.64} width={w*0.16} height={h*0.26}
-                  fill="none" stroke="#f8fafc" strokeWidth="3.5" />
-                {/* Bottom Goal */}
-                <line x1={w*0.035} y1={h*0.67} x2={w*0.035} y2={h*0.83}
-                  stroke="#f8fafc" strokeWidth="9" strokeLinecap="round" />
+                {/* Center Circle */}
+                <circle 
+                  cx={w*0.5} cy={h*0.5} 
+                  r={w*0.135} 
+                  fill="none" stroke="#f8fafc" strokeWidth="4" 
+                />
 
-                {/* === TOP GOAL (Opponent Goal) === */}
-                {/* Top Penalty Area */}
-                <rect x={w*0.035} y={h*0.05} width={w*0.28} height={h*0.43}
-                  fill="none" stroke="#f8fafc" strokeWidth="3.5" />
-                {/* Top Goal Area */}
-                <rect x={w*0.035} y={h*0.10} width={w*0.16} height={h*0.26}
-                  fill="none" stroke="#f8fafc" strokeWidth="3.5" />
-                {/* Top Goal */}
-                <line x1={w*0.965} y1={h*0.17} x2={w*0.965} y2={h*0.33}
-                  stroke="#f8fafc" strokeWidth="9" strokeLinecap="round" />
+                {/* === DEFENSIVE END (Bottom - Goalkeeper) === */}
+                {/* Penalty Area */}
+                <rect 
+                  x={w*0.035} y={h*0.55} 
+                  width={w*0.28} height={h*0.40}
+                  fill="none" stroke="#f8fafc" strokeWidth="3.5" 
+                />
+                {/* Goal Area (6-yard box) */}
+                <rect 
+                  x={w*0.035} y={h*0.68} 
+                  width={w*0.16} height={h*0.22}
+                  fill="none" stroke="#f8fafc" strokeWidth="3.5" 
+                />
+                {/* Goal */}
+                <line 
+                  x1={w*0.035} y1={h*0.71} 
+                  x2={w*0.035} y2={h*0.84}
+                  stroke="#f8fafc" strokeWidth="9" strokeLinecap="round" 
+                />
+
+                {/* === ATTACKING END (Top) === */}
+                {/* Penalty Area */}
+                <rect 
+                  x={w*0.035} y={h*0.05} 
+                  width={w*0.28} height={h*0.40}
+                  fill="none" stroke="#f8fafc" strokeWidth="3.5" 
+                />
+                {/* Goal Area */}
+                <rect 
+                  x={w*0.035} y={h*0.10} 
+                  width={w*0.16} height={h*0.22}
+                  fill="none" stroke="#f8fafc" strokeWidth="3.5" 
+                />
+                {/* Goal */}
+                <line 
+                  x1={w*0.965} y1={h*0.16} 
+                  x2={w*0.965} y2={h*0.29}
+                  stroke="#f8fafc" strokeWidth="9" strokeLinecap="round" 
+                />
 
                 {/* Drawn Lines */}
                 {lines.map((l, i) => (
