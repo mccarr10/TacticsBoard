@@ -84,6 +84,8 @@ export default function TacticalBoard() {
     };
   };
 
+  // ... (all handlers remain the same - onDrawStart, onDrawMove, etc.)
+
   const onDrawStart = (e) => {
     if (e.target.closest(".player-token")) return;
     e.preventDefault();
@@ -207,14 +209,12 @@ export default function TacticalBoard() {
           padding: "12px", background: "#020617",
         }}>
           {ready && w > 0 && (
-            <div 
-              ref={pitchRef}
-              style={{
-                width: `${w}px`, height: `${h}px`, borderRadius: "20px",
-                overflow: "hidden", boxShadow: "0 25px 70px rgba(0,0,0,0.65)",
-                position: "relative", border: "3px solid #e2e8f0",
-                touchAction: "none",
-              }}
+            <div ref={pitchRef} style={{
+              width: `${w}px`, height: `${h}px`, borderRadius: "20px",
+              overflow: "hidden", boxShadow: "0 25px 70px rgba(0,0,0,0.65)",
+              position: "relative", border: "3px solid #e2e8f0",
+              touchAction: "none",
+            }}
               onMouseDown={onDrawStart}
               onMouseMove={onDrawMove}
               onMouseUp={onDrawEnd}
@@ -239,65 +239,72 @@ export default function TacticalBoard() {
                   </marker>
                 </defs>
 
-                {/* Outer Pitch */}
+                {/* Main Pitch Outline */}
                 <rect 
-                  x={w*0.035} y={h*0.025} 
-                  width={w*0.93} height={h*0.95}
-                  fill="none" stroke="#f8fafc" strokeWidth="4" 
+                  x={w*0.04} y={h*0.03} 
+                  width={w*0.92} height={h*0.94}
+                  fill="none" stroke="#f1f5f9" strokeWidth="4" rx="8"
                 />
 
                 {/* Halfway Line */}
                 <line 
-                  x1={w*0.035} y1={h*0.5} 
-                  x2={w*0.965} y2={h*0.5} 
-                  stroke="#f8fafc" strokeWidth="4" 
+                  x1={w*0.04} y1={h*0.5} 
+                  x2={w*0.96} y2={h*0.5} 
+                  stroke="#f1f5f9" strokeWidth="4" 
                 />
 
                 {/* Center Circle */}
                 <circle 
                   cx={w*0.5} cy={h*0.5} 
-                  r={w*0.135} 
-                  fill="none" stroke="#f8fafc" strokeWidth="4" 
+                  r={w*0.14} 
+                  fill="none" stroke="#f1f5f9" strokeWidth="4" 
                 />
+                <circle cx={w*0.5} cy={h*0.5} r="4" fill="#f1f5f9" />
 
-                {/* === DEFENSIVE END (Bottom - Goalkeeper) === */}
-                {/* Penalty Area */}
+                {/* Corner Arcs */}
+                <path d={`M${w*0.04},${h*0.03} Q${w*0.08},${h*0.03} ${w*0.08},${h*0.07}`} fill="none" stroke="#f1f5f9" strokeWidth="4"/>
+                <path d={`M${w*0.96},${h*0.03} Q${w*0.92},${h*0.03} ${w*0.92},${h*0.07}`} fill="none" stroke="#f1f5f9" strokeWidth="4"/>
+                <path d={`M${w*0.04},${h*0.97} Q${w*0.08},${h*0.97} ${w*0.08},${h*0.93}`} fill="none" stroke="#f1f5f9" strokeWidth="4"/>
+                <path d={`M${w*0.96},${h*0.97} Q${w*0.92},${h*0.97} ${w*0.92},${h*0.93}`} fill="none" stroke="#f1f5f9" strokeWidth="4"/>
+
+                {/* === BOTTOM (Defensive) Goal Area === */}
+                {/* Penalty Box */}
                 <rect 
-                  x={w*0.035} y={h*0.55} 
-                  width={w*0.28} height={h*0.40}
-                  fill="none" stroke="#f8fafc" strokeWidth="3.5" 
+                  x={w*0.04} y={h*0.58} 
+                  width={w*0.28} height={h*0.37}
+                  fill="none" stroke="#f1f5f9" strokeWidth="3.5" 
                 />
-                {/* Goal Area (6-yard box) */}
+                {/* Goal Area (6yd) */}
                 <rect 
-                  x={w*0.035} y={h*0.68} 
-                  width={w*0.16} height={h*0.22}
-                  fill="none" stroke="#f8fafc" strokeWidth="3.5" 
+                  x={w*0.04} y={h*0.72} 
+                  width={w*0.18} height={h*0.23}
+                  fill="none" stroke="#f1f5f9" strokeWidth="3.5" 
                 />
                 {/* Goal */}
                 <line 
-                  x1={w*0.035} y1={h*0.71} 
-                  x2={w*0.035} y2={h*0.84}
-                  stroke="#f8fafc" strokeWidth="9" strokeLinecap="round" 
+                  x1={w*0.04} y1={h*0.74} 
+                  x2={w*0.04} y2={h*0.86}
+                  stroke="#f1f5f9" strokeWidth="8" strokeLinecap="round" 
                 />
 
-                {/* === ATTACKING END (Top) === */}
-                {/* Penalty Area */}
+                {/* === TOP (Attacking) Goal Area === */}
+                {/* Penalty Box */}
                 <rect 
-                  x={w*0.035} y={h*0.05} 
-                  width={w*0.28} height={h*0.40}
-                  fill="none" stroke="#f8fafc" strokeWidth="3.5" 
+                  x={w*0.04} y={h*0.05} 
+                  width={w*0.28} height={h*0.37}
+                  fill="none" stroke="#f1f5f9" strokeWidth="3.5" 
                 />
                 {/* Goal Area */}
                 <rect 
-                  x={w*0.035} y={h*0.10} 
-                  width={w*0.16} height={h*0.22}
-                  fill="none" stroke="#f8fafc" strokeWidth="3.5" 
+                  x={w*0.04} y={h*0.10} 
+                  width={w*0.18} height={h*0.23}
+                  fill="none" stroke="#f1f5f9" strokeWidth="3.5" 
                 />
                 {/* Goal */}
                 <line 
-                  x1={w*0.965} y1={h*0.16} 
-                  x2={w*0.965} y2={h*0.29}
-                  stroke="#f8fafc" strokeWidth="9" strokeLinecap="round" 
+                  x1={w*0.96} y1={h*0.14} 
+                  x2={w*0.96} y2={h*0.26}
+                  stroke="#f1f5f9" strokeWidth="8" strokeLinecap="round" 
                 />
 
                 {/* Drawn Lines */}
@@ -345,7 +352,7 @@ export default function TacticalBoard() {
           )}
         </div>
 
-        {/* Bottom Sheet */}
+        {/* Bottom Sheet - same as before */}
         {sheetOpen && <div onClick={() => { setSheetOpen(false); setSelectedPos(null); }}
           style={{ position: "absolute", inset: 0, background: "rgba(2,6,23,0.75)", zIndex: 40 }} />}
 
@@ -356,6 +363,7 @@ export default function TacticalBoard() {
           transition: "transform 0.3s cubic-bezier(0.32, 0.72, 0, 1)",
           maxHeight: "68vh", overflow: "hidden", boxShadow: "0 -20px 50px rgba(0,0,0,0.7)",
         }}>
+          {/* Bottom sheet content (unchanged) */}
           <div style={{ padding: "14px 0", display: "flex", justifyContent: "center" }}>
             <div style={{ width: "50px", height: "5px", background: "#475569", borderRadius: "999px" }} />
           </div>
