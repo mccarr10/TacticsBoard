@@ -10,23 +10,23 @@ const squad = [
 
 // --- PLAYER AND FORMATION DETAILS ---
 const initialFormation = [
-  { id: "GK", label: "Goalkeeper", x: 200, y: 560 },
-  { id: "DEF1", label: "Defender 1", x: 100, y: 420 },
-  { id: "DEF2", label: "Defender 2", x: 200, y: 420 },
-  { id: "DEF3", label: "Defender 3", x: 300, y: 420 },
-  { id: "MID1", label: "Midfielder 1", x: 100, y: 300 },
-  { id: "MID2", label: "Midfielder 2", x: 300, y: 300 },
-  { id: "STR", label: "Striker", x: 200, y: 160 }
+  { id: "GK", label: "Goalkeeper", x: 180, y: 700 },
+  { id: "DEF1", label: "Defender 1", x: 100, y: 560 },
+  { id: "DEF2", label: "Defender 2", x: 260, y: 560 },
+  { id: "MID1", label: "Midfielder 1", x: 100, y: 420 },
+  { id: "MID2", label: "Midfielder 2", x: 180, y: 420 },
+  { id: "MID3", label: "Midfielder 3", x: 260, y: 420 },
+  { id: "STR", label: "Striker", x: 180, y: 260 }
 ];
 
 const initialOppositionFormation = [
-  { id: "OPP1", label: "Opposition 1", x: 200, y: 40 },
+  { id: "OPP1", label: "Opposition 1", x: 180, y: 40 },
   { id: "OPP2", label: "Opposition 2", x: 100, y: 180 },
-  { id: "OPP3", label: "Opposition 3", x: 300, y: 180 },
+  { id: "OPP3", label: "Opposition 3", x: 260, y: 180 },
   { id: "OPP4", label: "Opposition 4", x: 100, y: 300 },
-  { id: "OPP5", label: "Opposition 5", x: 300, y: 300 },
+  { id: "OPP5", label: "Opposition 5", x: 260, y: 300 },
   { id: "OPP6", label: "Opposition 6", x: 100, y: 420 },
-  { id: "OPP7", label: "Opposition 7", x: 300, y: 420 }
+  { id: "OPP7", label: "Opposition 7", x: 260, y: 420 }
 ];
 
 // --- MODERN BLACK & WHITE JERSEY SVG ---
