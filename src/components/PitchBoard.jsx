@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect, useCallback } from "react";
 import Draggable from "react-draggable";
 
 const squad = [
@@ -6,71 +6,81 @@ const squad = [
   "Fionn","Josh","Sam","Mason","Marcel","Alan","Darragh","Sonny","Charlie","Cian"
 ];
 
-const JerseyIcon = ({ isOpposition }) => (
-  <svg width="34" height="34" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
-    <path
-      d="M16 8 L24 4 L40 4 L48 8 L56 20 L48 28 L48 56 L16 56 L16 28 L8 20 Z"
-      fill={isOpposition ? "#e11d48" : "#ffffff"}
-      stroke={isOpposition ? "#9f1239" : "#000"}
-      strokeWidth="3"
-    />
-    <rect x="22" y="4" width="6" height="52" fill={isOpposition ? "#9f1239" : "#000"} />
-    <rect x="36" y="4" width="6" height="52" fill={isOpposition ? "#9f1239" : "#000"} />
+const JerseyIcon = ({ size = 34 }) => (
+  <svg width={size} height={size} viewBox="0 0 64 64" fill="none">
+    <path d="M16 8 L24 4 L40 4 L48 8 L56 20 L48 28 L48 56 L16 56 L16 28 L8 20 Z"
+      fill="#ffffff" stroke="#000" strokeWidth="3" />
+    <rect x="22" y="4" width="6" height="52" fill="#000" />
+    <rect x="36" y="4" width="6" height="52" fill="#000" />
   </svg>
 );
 
-// Formation positions — will be recalculated based on actual pitch size
-// Stored as percentages of pitch width/height
 const FORMATION_PCT = [
-  { id: "GK",   label: "Goalkeeper",          xPct: 0.50, yPct: 0.85 },
-  { id: "DEF1", label: "Defender 1",          xPct: 0.28, yPct: 0.68 },
-  { id: "DEF2", label: "Defender 2",          xPct: 0.72, yPct: 0.68 },
-  { id: "CM",   label: "Central Midfielder",  xPct: 0.50, yPct: 0.50 },
-  { id: "WM1",  label: "Wide Mid 1",          xPct: 0.15, yPct: 0.35 },
-  { id: "WM2",  label: "Wide Mid 2",          xPct: 0.85, yPct: 0.35 },
-  { id: "STR",  label: "Striker",             xPct: 0.50, yPct: 0.18 },
+  { id: "GK",   label: "Goalkeeper",    xPct: 0.50, yPct: 0.85 },
+  { id: "DEF1", label: "Defender 1",    xPct: 0.28, yPct: 0.68 },
+  { id: "DEF2", label: "Defender 2",    xPct: 0.72, yPct: 0.68 },
+  { id: "CM",   label: "Central Mid",   xPct: 0.50, yPct: 0.50 },
+  { id: "WM1",  label: "Wide Mid 1",    xPct: 0.15, yPct: 0.34 },
+  { id: "WM2",  label: "Wide Mid 2",    xPct: 0.85, yPct: 0.34 },
+  { id: "STR",  label: "Striker",       xPct: 0.50, yPct: 0.17 },
 ];
 
 export default function PitchBoard() {
+  const wrapperRef = useRef(null);
+  const pitchRef = useRef(null);
+  const [dims, setDims] = useState({ w: 0, h: 0 });
+  const [sidebarOpen, setSidebarOpen] = useState(false);
   const [assigned, setAssigned] = useState({});
   const [selectedPos, setSelectedPos] = useState(null);
   const [lines, setLines] = useState([]);
   const [drawing, setDrawing] = useState(null);
-  const [formation, setFormation] = useState(null); // null until pitch measured
-  const pitchRef = useRef(null);
-  const [pitchRect, setPitchRect] = useState(null);
+  const [players, setPlayers] = useState([]);
+  const [ready, setReady] = useState(false);
 
-  // Measure pitch on mount and resize
-  const measurePitch = (el) => {
-    if (!el) return;
-    pitchRef.current = el;
-    const rect = el.getBoundingClientRect();
-    setPitchRect({ w: rect.width, h: rect.height });
-    // Init formation using actual pixel size
-    setFormation(
+  // ── Measure available space and compute pitch dimensions ──
+  const measure = useCallback(() => {
+    if (!wrapperRef.current) return;
+    const el = wrapperRef.current;
+    const aw = el.clientWidth;
+    const ah = el.clientHeight;
+    // Pitch is portrait 3:4. Fit inside available space.
+    let w, h;
+    if (aw / ah < 3 / 4) {
+      w = aw;
+      h = aw * (4 / 3);
+    } else {
+      h = ah;
+      w = ah * (3 / 4);
+    }
+    setDims({ w, h });
+    setPlayers(
       FORMATION_PCT.map((p) => ({
         ...p,
-        x: p.xPct * rect.width,
-        y: p.yPct * rect.height,
+        x: p.xPct * w,
+        y: p.yPct * h,
       }))
     );
-  };
+    setReady(true);
+  }, []);
 
-  const assignPlayer = (player) => {
-    if (!selectedPos) return;
-    setAssigned((prev) => ({ ...prev, [selectedPos]: player }));
-    setSelectedPos(null);
-  };
+  useEffect(() => {
+    measure();
+    const ro = new ResizeObserver(measure);
+    if (wrapperRef.current) ro.observe(wrapperRef.current);
+    return () => ro.disconnect();
+  }, [measure]);
 
+  // ── Pitch coordinate helper ──
   const getCoords = (e) => {
     const rect = pitchRef.current.getBoundingClientRect();
-    const clientX = e.touches ? e.touches[0].clientX : e.clientX;
-    const clientY = e.touches ? e.touches[0].clientY : e.clientY;
-    return { x: clientX - rect.left, y: clientY - rect.top };
+    const src = e.touches ? e.touches[0] : e;
+    return {
+      x: Math.max(0, Math.min(dims.w, src.clientX - rect.left)),
+      y: Math.max(0, Math.min(dims.h, src.clientY - rect.top)),
+    };
   };
 
   const onDrawStart = (e) => {
-    // Only start drawing if not clicking a player
     if (e.target.closest(".player-token")) return;
     e.preventDefault();
     const { x, y } = getCoords(e);
@@ -84,149 +94,196 @@ export default function PitchBoard() {
     setDrawing((d) => ({ ...d, x2: x, y2: y }));
   };
 
-  const onDrawEnd = (e) => {
+  const onDrawEnd = () => {
     if (!drawing) return;
     const dx = drawing.x2 - drawing.x1;
     const dy = drawing.y2 - drawing.y1;
-    // Only save if line is long enough to be intentional
-    if (Math.sqrt(dx * dx + dy * dy) > 20) {
+    if (Math.sqrt(dx * dx + dy * dy) > 15) {
       setLines((l) => [...l, drawing]);
     }
     setDrawing(null);
   };
 
-  const handleDrag = (posId, data) => {
-    setFormation((f) =>
-      f.map((pos) =>
-        pos.id === posId ? { ...pos, x: data.x + 17, y: data.y + 17 } : pos
-      )
+  const handleDrag = (id, data) => {
+    const half = dims.w * 0.08;
+    setPlayers((ps) =>
+      ps.map((p) => (p.id === id ? { ...p, x: data.x + half, y: data.y + half } : p))
     );
   };
 
-  const W = pitchRect?.w || 1;
-  const H = pitchRect?.h || 1;
+  const assignPlayer = (player) => {
+    if (!selectedPos) return;
+    setAssigned((a) => ({ ...a, [selectedPos]: player }));
+    setSelectedPos(null);
+    setSidebarOpen(false);
+  };
+
+  const { w, h } = dims;
+  // Scale jersey and font to pitch size
+  const jerseySize = Math.max(24, Math.min(44, w * 0.11));
+  const fontSize = Math.max(8, Math.min(13, w * 0.032));
+  const tokenHalf = jerseySize / 2;
 
   return (
     <div style={{
       display: "flex",
+      flexDirection: "column",
+      width: "100vw",
       height: "100vh",
-      fontFamily: "'Segoe UI', sans-serif",
       background: "#0f172a",
-      overflow: "hidden"
+      fontFamily: "'Segoe UI', system-ui, sans-serif",
+      overflow: "hidden",
+      userSelect: "none",
     }}>
 
-      {/* ── Sidebar ── */}
+      {/* ── Top bar ── */}
       <div style={{
-        width: "160px",
-        flexShrink: 0,
-        background: "#1e293b",
-        color: "white",
-        padding: "10px",
-        overflowY: "auto",
-        borderRight: "2px solid #0f172a"
-      }}>
-        <div style={{
-          fontSize: "11px", color: "#94a3b8",
-          textTransform: "uppercase", letterSpacing: "1px", marginBottom: "8px"
-        }}>
-          Squad List
-        </div>
-
-        {selectedPos && (
-          <div style={{
-            background: "#facc15", color: "#000", padding: "6px",
-            borderRadius: "6px", marginBottom: "8px",
-            fontWeight: "bold", textAlign: "center", fontSize: "11px"
-          }}>
-            Tap player to assign to {selectedPos}
-          </div>
-        )}
-
-        {squad.map((player) => (
-          <div
-            key={player}
-            onClick={() => assignPlayer(player)}
-            style={{
-              background: "#334155", borderRadius: "6px", marginBottom: "5px",
-              padding: "5px 7px", cursor: "pointer", display: "flex",
-              alignItems: "center", gap: "6px", fontSize: "13px",
-              border: "1px solid #475569"
-            }}
-            onMouseEnter={e => e.currentTarget.style.background = "#475569"}
-            onMouseLeave={e => e.currentTarget.style.background = "#334155"}
-          >
-            <JerseyIcon />
-            {player}
-          </div>
-        ))}
-      </div>
-
-      {/* ── Main ── */}
-      <div style={{
-        flex: 1,
         display: "flex",
-        flexDirection: "column",
         alignItems: "center",
-        padding: "10px 8px",
-        minWidth: 0
+        justifyContent: "space-between",
+        padding: "8px 12px",
+        background: "#1e293b",
+        borderBottom: "2px solid #0f172a",
+        flexShrink: 0,
+        gap: "8px",
+        flexWrap: "wrap",
       }}>
-        <div style={{ color: "white", fontSize: "16px", fontWeight: "bold", marginBottom: "8px" }}>
-          7-Player Formation
+        <div style={{ color: "white", fontWeight: "bold", fontSize: "15px" }}>
+          ⚽ 7-Player Formation
         </div>
 
-        {/* Buttons */}
-        <div style={{ display: "flex", gap: "8px", marginBottom: "10px" }}>
+        <div style={{ display: "flex", gap: "6px", flexWrap: "wrap" }}>
           <button
-            onClick={() => setLines((l) => l.slice(0, -1))}
+            onClick={() => setSidebarOpen((o) => !o)}
             style={{
-              padding: "6px 14px", background: "#334155", color: "white",
+              padding: "6px 12px", background: "#334155", color: "white",
               borderRadius: "7px", border: "none", cursor: "pointer", fontSize: "13px"
             }}
           >
-            Undo Arrow
+            👥 Squad
+          </button>
+          <button
+            onClick={() => setLines((l) => l.slice(0, -1))}
+            style={{
+              padding: "6px 12px", background: "#334155", color: "white",
+              borderRadius: "7px", border: "none", cursor: "pointer", fontSize: "13px"
+            }}
+          >
+            ↩ Undo
           </button>
           <button
             onClick={() => setLines([])}
             style={{
-              padding: "6px 14px", background: "#b91c1c", color: "white",
+              padding: "6px 12px", background: "#b91c1c", color: "white",
               borderRadius: "7px", border: "none", cursor: "pointer", fontSize: "13px"
             }}
           >
-            Clear Arrows
+            🗑 Clear
           </button>
         </div>
+      </div>
 
-        {/* Pitch — fills remaining space */}
+      {/* ── Body ── */}
+      <div style={{ display: "flex", flex: 1, overflow: "hidden", position: "relative" }}>
+
+        {/* ── Sidebar overlay (mobile) / permanent (desktop) ── */}
+        {sidebarOpen && (
+          <div
+            onClick={() => setSidebarOpen(false)}
+            style={{
+              position: "absolute", inset: 0, background: "rgba(0,0,0,0.5)",
+              zIndex: 20, display: "block"
+            }}
+          />
+        )}
+
         <div style={{
-          flex: 1,
-          width: "100%",
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "stretch",
-          minHeight: 0
+          position: "absolute",
+          top: 0, left: 0, bottom: 0,
+          width: "200px",
+          background: "#1e293b",
+          color: "white",
+          padding: "10px",
+          overflowY: "auto",
+          zIndex: 30,
+          transform: sidebarOpen ? "translateX(0)" : "translateX(-100%)",
+          transition: "transform 0.25s ease",
+          borderRight: "2px solid #0f172a",
         }}>
           <div style={{
-            /* Keep 3:4 portrait ratio, as tall as available */
-            aspectRatio: "3 / 4",
-            maxHeight: "100%",
-            position: "relative"
+            display: "flex", justifyContent: "space-between",
+            alignItems: "center", marginBottom: "10px"
           }}>
+            <div style={{ fontSize: "12px", color: "#94a3b8", textTransform: "uppercase", letterSpacing: "1px" }}>
+              Squad List
+            </div>
+            <button
+              onClick={() => setSidebarOpen(false)}
+              style={{ background: "none", border: "none", color: "white", fontSize: "18px", cursor: "pointer" }}
+            >×</button>
+          </div>
+
+          {selectedPos && (
+            <div style={{
+              background: "#facc15", color: "#000", padding: "7px",
+              borderRadius: "6px", marginBottom: "10px",
+              fontWeight: "bold", textAlign: "center", fontSize: "12px"
+            }}>
+              Assigning to: {selectedPos}
+            </div>
+          )}
+
+          {squad.map((player) => (
             <div
-              ref={measurePitch}
+              key={player}
+              onClick={() => assignPlayer(player)}
+              style={{
+                background: "#334155", borderRadius: "6px", marginBottom: "5px",
+                padding: "7px 8px", cursor: "pointer", display: "flex",
+                alignItems: "center", gap: "8px", fontSize: "14px",
+                border: "1px solid #475569",
+              }}
+              onMouseEnter={e => e.currentTarget.style.background = "#475569"}
+              onMouseLeave={e => e.currentTarget.style.background = "#334155"}
+            >
+              <JerseyIcon size={28} />
+              {player}
+            </div>
+          ))}
+        </div>
+
+        {/* ── Pitch area ── */}
+        <div
+          ref={wrapperRef}
+          style={{
+            flex: 1,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            padding: "10px",
+            overflow: "hidden",
+          }}
+        >
+          {ready && w > 0 && (
+            <div
+              ref={pitchRef}
               onMouseDown={onDrawStart}
               onMouseMove={onDrawMove}
               onMouseUp={onDrawEnd}
+              onMouseLeave={onDrawEnd}
               onTouchStart={onDrawStart}
               onTouchMove={onDrawMove}
               onTouchEnd={onDrawEnd}
               style={{
-                width: "100%",
-                height: "100%",
                 position: "relative",
+                width: `${w}px`,
+                height: `${h}px`,
                 borderRadius: "10px",
                 overflow: "hidden",
-                boxShadow: "0 8px 32px rgba(0,0,0,0.6)",
-                cursor: "crosshair"
+                boxShadow: "0 8px 40px rgba(0,0,0,0.7)",
+                cursor: "crosshair",
+                touchAction: "none",
+                flexShrink: 0,
               }}
             >
               {/* Grass stripes */}
@@ -236,153 +293,126 @@ export default function PitchBoard() {
                   top: `${i * (100 / 14)}%`,
                   width: "100%",
                   height: `${100 / 14}%`,
-                  background: i % 2 === 0 ? "#3a8a3a" : "#2d7a2d"
+                  background: i % 2 === 0 ? "#3a8a3a" : "#2d7a2d",
                 }} />
               ))}
 
-              {/* ── SVG Pitch Markings + Arrows ── */}
+              {/* ── SVG markings + arrows ── */}
               <svg
-                style={{ position: "absolute", inset: 0, width: "100%", height: "100%" }}
-                viewBox={`0 0 ${W} ${H}`}
+                style={{ position: "absolute", inset: 0 }}
+                width={w} height={h}
+                viewBox={`0 0 ${w} ${h}`}
               >
                 <defs>
-                  <marker id="arrowhead" markerWidth="7" markerHeight="7" refX="6" refY="3.5" orient="auto">
-                    <polygon points="0 0, 7 3.5, 0 7" fill="#facc15" />
+                  <marker id="arr" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto">
+                    <polygon points="0 0, 8 4, 0 8" fill="#facc15" />
                   </marker>
                 </defs>
 
-                {/* Outer border */}
-                <rect
-                  x={W * 0.04} y={H * 0.02}
-                  width={W * 0.92} height={H * 0.96}
-                  fill="none" stroke="white" strokeWidth="2.5"
-                />
+                {/* Border */}
+                <rect x={w*0.04} y={h*0.02} width={w*0.92} height={h*0.96}
+                  fill="none" stroke="white" strokeWidth="2.5" />
 
-                {/* Halfway line */}
-                <line
-                  x1={W * 0.04} y1={H * 0.5}
-                  x2={W * 0.96} y2={H * 0.5}
-                  stroke="white" strokeWidth="2"
-                />
+                {/* Halfway */}
+                <line x1={w*0.04} y1={h*0.5} x2={w*0.96} y2={h*0.5}
+                  stroke="white" strokeWidth="2" />
 
-                {/* Centre circle */}
-                <circle cx={W * 0.5} cy={H * 0.5} r={W * 0.14}
+                {/* Centre circle + spot */}
+                <circle cx={w*0.5} cy={h*0.5} r={w*0.14}
                   fill="none" stroke="white" strokeWidth="2" />
-                <circle cx={W * 0.5} cy={H * 0.5} r="3" fill="white" />
+                <circle cx={w*0.5} cy={h*0.5} r="3" fill="white" />
 
-                {/* ── TOP penalty area ── */}
-                {/* Large box */}
-                <rect
-                  x={W * 0.22} y={H * 0.02}
-                  width={W * 0.56} height={H * 0.16}
-                  fill="none" stroke="white" strokeWidth="2"
-                />
-                {/* Small box */}
-                <rect
-                  x={W * 0.34} y={H * 0.02}
-                  width={W * 0.32} height={H * 0.07}
-                  fill="none" stroke="white" strokeWidth="2"
-                />
-                {/* Goal */}
-                <rect
-                  x={W * 0.40} y={H * 0.005}
-                  width={W * 0.20} height={H * 0.025}
-                  fill="none" stroke="white" strokeWidth="2"
-                />
-                {/* Penalty spot */}
-                <circle cx={W * 0.5} cy={H * 0.13} r="2.5" fill="white" />
-                {/* Penalty arc — curves DOWN (away from top edge) */}
-                <path
-                  d={`M ${W*0.30} ${H*0.18} A ${W*0.22} ${W*0.22} 0 0 1 ${W*0.70} ${H*0.18}`}
-                  fill="none" stroke="white" strokeWidth="2"
-                />
+                {/* TOP — large box */}
+                <rect x={w*0.22} y={h*0.02} width={w*0.56} height={h*0.16}
+                  fill="none" stroke="white" strokeWidth="2" />
+                {/* TOP — small box */}
+                <rect x={w*0.34} y={h*0.02} width={w*0.32} height={h*0.07}
+                  fill="none" stroke="white" strokeWidth="2" />
+                {/* TOP — goal */}
+                <rect x={w*0.40} y={h*0.005} width={w*0.20} height={h*0.02}
+                  fill="none" stroke="white" strokeWidth="2" />
+                {/* TOP — penalty spot */}
+                <circle cx={w*0.5} cy={h*0.13} r="3" fill="white" />
+                {/* TOP — arc (curves INTO pitch = downward) */}
+                <path d={`M ${w*0.30} ${h*0.18} A ${w*0.22} ${w*0.22} 0 0 1 ${w*0.70} ${h*0.18}`}
+                  fill="none" stroke="white" strokeWidth="2" />
 
-                {/* ── BOTTOM penalty area ── */}
-                {/* Large box */}
-                <rect
-                  x={W * 0.22} y={H * 0.82}
-                  width={W * 0.56} height={H * 0.16}
-                  fill="none" stroke="white" strokeWidth="2"
-                />
-                {/* Small box */}
-                <rect
-                  x={W * 0.34} y={H * 0.91}
-                  width={W * 0.32} height={H * 0.07}
-                  fill="none" stroke="white" strokeWidth="2"
-                />
-                {/* Goal */}
-                <rect
-                  x={W * 0.40} y={H * 0.975}
-                  width={W * 0.20} height={H * 0.025}
-                  fill="none" stroke="white" strokeWidth="2"
-                />
-                {/* Penalty spot */}
-                <circle cx={W * 0.5} cy={H * 0.87} r="2.5" fill="white" />
-                {/* Penalty arc — curves UP (away from bottom edge) */}
-                <path
-                  d={`M ${W*0.30} ${H*0.82} A ${W*0.22} ${W*0.22} 0 0 0 ${W*0.70} ${H*0.82}`}
-                  fill="none" stroke="white" strokeWidth="2"
-                />
+                {/* BOTTOM — large box */}
+                <rect x={w*0.22} y={h*0.82} width={w*0.56} height={h*0.16}
+                  fill="none" stroke="white" strokeWidth="2" />
+                {/* BOTTOM — small box */}
+                <rect x={w*0.34} y={h*0.91} width={w*0.32} height={h*0.07}
+                  fill="none" stroke="white" strokeWidth="2" />
+                {/* BOTTOM — goal */}
+                <rect x={w*0.40} y={h*0.975} width={w*0.20} height={h*0.02}
+                  fill="none" stroke="white" strokeWidth="2" />
+                {/* BOTTOM — penalty spot */}
+                <circle cx={w*0.5} cy={h*0.87} r="3" fill="white" />
+                {/* BOTTOM — arc (curves INTO pitch = upward) */}
+                <path d={`M ${w*0.30} ${h*0.82} A ${w*0.22} ${w*0.22} 0 0 0 ${w*0.70} ${h*0.82}`}
+                  fill="none" stroke="white" strokeWidth="2" />
 
-                {/* ── Saved arrows ── */}
+                {/* Saved arrows */}
                 {lines.map((l, i) => (
-                  <line
-                    key={i}
+                  <line key={i}
                     x1={l.x1} y1={l.y1} x2={l.x2} y2={l.y2}
                     stroke="#facc15" strokeWidth="3"
-                    markerEnd="url(#arrowhead)"
                     strokeLinecap="round"
+                    markerEnd="url(#arr)"
                   />
                 ))}
 
-                {/* ── Arrow being drawn ── */}
+                {/* Live arrow */}
                 {drawing && (
                   <line
                     x1={drawing.x1} y1={drawing.y1}
                     x2={drawing.x2} y2={drawing.y2}
                     stroke="#facc15" strokeWidth="3"
-                    strokeDasharray="8 4"
-                    markerEnd="url(#arrowhead)"
+                    strokeDasharray="10 5"
                     strokeLinecap="round"
+                    markerEnd="url(#arr)"
                   />
                 )}
               </svg>
 
               {/* ── Players ── */}
-              {formation && formation.map((pos) => (
+              {players.map((pos) => (
                 <Draggable
                   key={pos.id}
-                  position={{ x: pos.x - 17, y: pos.y - 17 }}
+                  position={{ x: pos.x - tokenHalf, y: pos.y - tokenHalf }}
                   bounds="parent"
                   onStop={(e, data) => handleDrag(pos.id, data)}
                 >
                   <div
                     className="player-token"
-                    onClick={() => setSelectedPos(pos.id)}
+                    onClick={() => {
+                      setSelectedPos(pos.id);
+                      setSidebarOpen(true);
+                    }}
                     style={{
                       position: "absolute",
+                      width: `${jerseySize + 16}px`,
                       textAlign: "center",
                       cursor: "grab",
-                      width: "52px",
                       zIndex: 10,
                       transform: selectedPos === pos.id ? "scale(1.2)" : "scale(1)",
                       transition: "transform 0.15s",
                       filter: selectedPos === pos.id
-                        ? "drop-shadow(0 0 7px #facc15)"
-                        : "drop-shadow(0 2px 3px rgba(0,0,0,0.6))"
+                        ? "drop-shadow(0 0 8px #facc15)"
+                        : "drop-shadow(0 2px 4px rgba(0,0,0,0.7))",
                     }}
                   >
-                    <JerseyIcon />
+                    <JerseyIcon size={jerseySize} />
                     <div style={{
                       color: "white",
                       fontWeight: "bold",
-                      fontSize: "9px",
+                      fontSize: `${fontSize}px`,
                       marginTop: "1px",
-                      textShadow: "1px 1px 4px #000, 0 0 6px #000",
+                      textShadow: "1px 1px 4px #000",
                       whiteSpace: "nowrap",
                       overflow: "hidden",
                       textOverflow: "ellipsis",
-                      maxWidth: "52px"
+                      maxWidth: `${jerseySize + 16}px`,
                     }}>
                       {assigned[pos.id] || pos.label}
                     </div>
@@ -390,7 +420,7 @@ export default function PitchBoard() {
                 </Draggable>
               ))}
             </div>
-          </div>
+          )}
         </div>
       </div>
     </div>
