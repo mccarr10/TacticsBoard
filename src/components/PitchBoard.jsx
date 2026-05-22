@@ -53,10 +53,10 @@ export default function PitchBoard() {
 
     let w, h;
 
-    // Improved responsive logic
+    // Improved scaling for iPhone
     if (aw / ah < 0.73) {
-      w = Math.min(aw * 0.96, 680);   // better max width
-      h = w * 1.37;
+      w = Math.min(aw * 0.97, 680);
+      h = w * 1.38;
     } else {
       h = ah * 0.96;
       w = h * 0.73;
@@ -92,7 +92,6 @@ export default function PitchBoard() {
     };
   };
 
-  // ... (drawing handlers unchanged)
   const onDrawStart = (e) => {
     if (e.target.closest(".player-token")) return;
     e.preventDefault();
@@ -166,23 +165,11 @@ export default function PitchBoard() {
     setSheetOpen(false);
   };
 
-  const clearAssignment = () => {
-    if (!selectedPos) return;
-    setAssigned((a) => {
-      const n = { ...a };
-      delete n[selectedPos];
-      return n;
-    });
-    setSelectedPos(null);
-    setSheetOpen(false);
-  };
-
   const { w, h } = dims;
 
-  // Improved sizing
-  const jerseySize = Math.max(68, Math.min(98, w * 0.168));
-  const fontSize = Math.max(13.5, Math.min(17.5, w * 0.044));
-  const tokenWidth = jerseySize + 32; // extra room for names
+  const jerseySize = Math.max(66, Math.min(96, w * 0.165));
+  const fontSize = Math.max(13, Math.min(17, w * 0.043));
+  const tokenWidth = jerseySize + 28;
 
   return (
     <div
@@ -203,7 +190,7 @@ export default function PitchBoard() {
         style={{
           width: "100%",
           height: "100%",
-          maxWidth: "640px",        // ← Much better on desktop
+          maxWidth: "640px",
           minWidth: "340px",
           background: "#0f172a",
           display: "flex",
@@ -213,7 +200,7 @@ export default function PitchBoard() {
           boxShadow: "0 0 0 1px rgba(255,255,255,0.08)",
         }}
       >
-        {/* HEADER - unchanged */}
+        {/* HEADER */}
         <div
           style={{
             height: "92px",
@@ -280,7 +267,7 @@ export default function PitchBoard() {
             display: "flex",
             justifyContent: "center",
             alignItems: "center",
-            padding: "12px",
+            padding: "10px",
           }}
         >
           {ready && w > 0 && (
@@ -304,7 +291,7 @@ export default function PitchBoard() {
                 touchAction: "none",
               }}
             >
-              {/* Grass, markings, lines, etc. remain the same */}
+              {/* GRASS */}
               {[...Array(14)].map((_, i) => (
                 <div
                   key={i}
@@ -318,19 +305,20 @@ export default function PitchBoard() {
                 />
               ))}
 
+              {/* PITCH MARKINGS */}
               <svg
                 style={{ position: "absolute", inset: 0 }}
                 width={w}
                 height={h}
                 viewBox={`0 0 ${w} ${h}`}
               >
-                {/* ... existing SVG markings and drawn lines ... */}
                 <defs>
                   <marker id="arr" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto">
                     <polygon points="0 0, 8 4, 0 8" fill="#facc15" />
                   </marker>
                 </defs>
 
+                {/* Outer Boundary */}
                 <rect
                   x={w * 0.04}
                   y={h * 0.02}
@@ -340,11 +328,15 @@ export default function PitchBoard() {
                   stroke="white"
                   strokeWidth="3"
                 />
+
+                {/* Halfway Line */}
                 <line
                   x1={w * 0.04} y1={h * 0.5}
                   x2={w * 0.96} y2={h * 0.5}
                   stroke="white" strokeWidth="3"
                 />
+
+                {/* Center Circle */}
                 <circle
                   cx={w * 0.5} cy={h * 0.5}
                   r={w * 0.14}
@@ -353,6 +345,49 @@ export default function PitchBoard() {
                   strokeWidth="3"
                 />
 
+                {/* Penalty Areas */}
+                {/* Left Penalty Area */}
+                <rect
+                  x={w * 0.04} y={h * 0.28}
+                  width={w * 0.26} height={h * 0.44}
+                  fill="none" stroke="white" strokeWidth="3"
+                />
+                {/* Right Penalty Area */}
+                <rect
+                  x={w * 0.70} y={h * 0.28}
+                  width={w * 0.26} height={h * 0.44}
+                  fill="none" stroke="white" strokeWidth="3"
+                />
+
+                {/* Goal Areas (6-yard box) */}
+                {/* Left Goal Area */}
+                <rect
+                  x={w * 0.04} y={h * 0.38}
+                  width={w * 0.18} height={h * 0.24}
+                  fill="none" stroke="white" strokeWidth="3"
+                />
+                {/* Right Goal Area */}
+                <rect
+                  x={w * 0.78} y={h * 0.38}
+                  width={w * 0.18} height={h * 0.24}
+                  fill="none" stroke="white" strokeWidth="3"
+                />
+
+                {/* Goals */}
+                {/* Left Goal */}
+                <line
+                  x1={w * 0.04} y1={h * 0.42}
+                  x2={w * 0.04} y2={h * 0.58}
+                  stroke="white" strokeWidth="7"
+                />
+                {/* Right Goal */}
+                <line
+                  x1={w * 0.96} y1={h * 0.42}
+                  x2={w * 0.96} y2={h * 0.58}
+                  stroke="white" strokeWidth="7"
+                />
+
+                {/* Drawn Lines */}
                 {lines.map((l, i) => (
                   <line
                     key={i}
@@ -430,7 +465,7 @@ export default function PitchBoard() {
           )}
         </div>
 
-        {/* Bottom Sheet - unchanged */}
+        {/* Bottom Sheet */}
         {sheetOpen && (
           <div
             onClick={() => {
@@ -465,7 +500,6 @@ export default function PitchBoard() {
             flexDirection: "column",
           }}
         >
-          {/* ... rest of your bottom sheet code (unchanged) ... */}
           <div style={{ display: "flex", justifyContent: "center", padding: "14px 0" }}>
             <div style={{ width: "52px", height: "6px", borderRadius: "999px", background: "#475569" }} />
           </div>
