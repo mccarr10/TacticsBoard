@@ -46,12 +46,9 @@ const JerseyIcon = ({ isOpposition }) => (
 export default function PitchBoard() {
   const [assigned, setAssigned] = useState({});
   const [selectedPos, setSelectedPos] = useState(null);
-
   const [lines, setLines] = useState([]);
   const [current, setCurrent] = useState(null);
-
   const [formation, setFormation] = useState(initialFormation);
-  const [oppositionFormation] = useState(initialOppositionFormation);
 
   const assignPlayer = (player) => {
     if (!selectedPos) return;
@@ -90,6 +87,14 @@ export default function PitchBoard() {
 
   const undoArrow = () => setLines(lines.slice(0, -1));
   const clearArrows = () => setLines([]);
+
+  // Update player position during drag
+  const handleDrag = (posId, data) => {
+    const updatedFormation = formation.map((pos) =>
+      pos.id === posId ? { ...pos, x: data.x, y: data.y } : pos
+    );
+    setFormation(updatedFormation);
+  };
 
   return (
     <div style={{ display: "flex", height: "100vh", fontFamily: "Inter, sans-serif" }}>
@@ -194,67 +199,31 @@ export default function PitchBoard() {
             }} />
           ))}
 
-          {/* Pitch Markings */}
-          <svg width="100%" height="100%" style={{ position: "absolute" }}>
-            <rect x="5%" y="5%" width="90%" height="90%" fill="none" stroke="white" strokeWidth="3" />
-            <line x1="5%" y1="50%" x2="95%" y2="50%" stroke="white" strokeWidth="3" />
-            <circle cx="50%" cy="50%" r="8%" stroke="white" strokeWidth="3" fill="none" />
-          </svg>
-
           {/* Player Formation */}
           {formation.map((pos) => (
-            <div
+            <Draggable
               key={pos.id}
-              onClick={() => setSelectedPos(pos.id)}
-              style={{
-                position: "absolute",
-                left: `${pos.x}px`,
-                top: `${pos.y}px`,
-                textAlign: "center",
-                cursor: "pointer"
-              }}
+              position={{ x: pos.x, y: pos.y }}
+              bounds="parent"
+              onStop={(e, data) => handleDrag(pos.id, data)}
             >
-              <JerseyIcon />
-              <div style={{
-                color: "white",
-                fontWeight: "bold",
-                marginTop: "4px"
-              }}>{assigned[pos.id] || pos.label}</div>
-            </div>
+              <div
+                onClick={() => setSelectedPos(pos.id)}
+                style={{
+                  position: "absolute",
+                  textAlign: "center",
+                  cursor: "pointer"
+                }}
+              >
+                <JerseyIcon />
+                <div style={{
+                  color: "white",
+                  fontWeight: "bold",
+                  marginTop: "4px"
+                }}>{assigned[pos.id] || pos.label}</div>
+              </div>
+            </Draggable>
           ))}
-
-          {/* Opposition Formation */}
-          {oppositionFormation.map((pos) => (
-            <div key={pos.id} style={{
-              position: "absolute",
-              left: `${pos.x}px`,
-              top: `${pos.y}px`,
-              textAlign: "center"
-            }}>
-              <JerseyIcon isOpposition />
-              <div style={{
-                color: "#f87171",
-                fontWeight: "bold",
-                marginTop: "4px"
-              }}>{pos.label}</div>
-            </div>
-          ))}
-
-          {/* Arrows */}
-          <svg width="100%" height="100%" style={{ position: "absolute" }}>
-            {lines.map((line, index) => (
-              <line
-                key={index}
-                x1={line.x1}
-                y1={line.y1}
-                x2={line.x2}
-                y2={line.y2}
-                stroke="orange"
-                strokeWidth="3"
-                markerEnd="url(#arrow)"
-              />
-            ))}
-          </svg>
         </div>
       </div>
     </div>
