@@ -57,14 +57,7 @@ export default function TacticalBoard() {
 
     setDims({ w, h });
 
-    setPlayers(
-      FORMATION.map((p) => ({
-        ...p,
-        x: p.xPct * w,
-        y: p.yPct * h,
-      }))
-    );
-
+    setPlayers(FORMATION.map(p => ({ ...p, x: p.xPct * w, y: p.yPct * h })));
     setReady(true);
   }, []);
 
@@ -84,8 +77,6 @@ export default function TacticalBoard() {
     };
   };
 
-  // ... (all handlers remain the same - onDrawStart, onDrawMove, etc.)
-
   const onDrawStart = (e) => {
     if (e.target.closest(".player-token")) return;
     e.preventDefault();
@@ -97,16 +88,14 @@ export default function TacticalBoard() {
     if (!drawing) return;
     e.preventDefault();
     const { x, y } = getCoords(e);
-    setDrawing((d) => ({ ...d, x2: x, y2: y }));
+    setDrawing(d => ({ ...d, x2: x, y2: y }));
   };
 
   const onDrawEnd = () => {
     if (!drawing) return;
     const dx = drawing.x2 - drawing.x1;
     const dy = drawing.y2 - drawing.y1;
-    if (Math.sqrt(dx * dx + dy * dy) > 18) {
-      setLines((l) => [...l, drawing]);
-    }
+    if (Math.sqrt(dx * dx + dy * dy) > 18) setLines(l => [...l, drawing]);
     setDrawing(null);
   };
 
@@ -129,28 +118,25 @@ export default function TacticalBoard() {
     }
   };
 
-  const onDragStop = (posId, e, data) => {
+  const onDragStop = (posId, _, data) => {
     const wasDrag = didDragRef.current[posId];
     const jerseyHalf = jerseySize / 2;
 
     if (wasDrag) {
-      setPlayers((ps) =>
-        ps.map((p) =>
-          p.id === posId ? { ...p, x: data.x + jerseyHalf, y: data.y + jerseyHalf } : p
-        )
-      );
+      setPlayers(ps => ps.map(p => p.id === posId 
+        ? { ...p, x: data.x + jerseyHalf, y: data.y + jerseyHalf } 
+        : p));
     } else {
       setSelectedPos(posId);
       setSheetOpen(true);
     }
-
     dragStartRef.current[posId] = null;
     didDragRef.current[posId] = false;
   };
 
   const assignPlayer = (player) => {
     if (!selectedPos) return;
-    setAssigned((a) => ({ ...a, [selectedPos]: player }));
+    setAssigned(a => ({ ...a, [selectedPos]: player }));
     setSelectedPos(null);
     setSheetOpen(false);
   };
@@ -167,69 +153,31 @@ export default function TacticalBoard() {
   const tokenWidth = jerseySize + 26;
 
   return (
-    <div style={{
-      width: "100vw", height: "100dvh", background: "#020617",
-      overflow: "hidden", position: "fixed", inset: 0,
-      display: "flex", justifyContent: "center", alignItems: "center",
-      fontFamily: "'Inter', system-ui, sans-serif",
-    }}>
-      <div style={{
-        width: "100%", height: "100%", maxWidth: "640px", minWidth: "340px",
-        background: "#0f172a", display: "flex", flexDirection: "column",
-        overflow: "hidden", position: "relative", boxShadow: "0 0 40px rgba(0,0,0,0.7)",
-      }}>
+    <div style={{ width: "100vw", height: "100dvh", background: "#020617", overflow: "hidden", position: "fixed", inset: 0, display: "flex", justifyContent: "center", alignItems: "center", fontFamily: "'Inter', system-ui, sans-serif" }}>
+      <div style={{ width: "100%", height: "100%", maxWidth: "640px", minWidth: "340px", background: "#0f172a", display: "flex", flexDirection: "column", overflow: "hidden", position: "relative", boxShadow: "0 0 40px rgba(0,0,0,0.7)" }}>
+        
         {/* HEADER */}
-        <div style={{
-          height: "88px", padding: "16px 20px 12px", background: "#1e2937",
-          borderBottom: "1px solid #334155", display: "flex",
-          alignItems: "center", justifyContent: "space-between", zIndex: 30,
-        }}>
+        <div style={{ height: "88px", padding: "16px 20px 12px", background: "#1e2937", borderBottom: "1px solid #334155", display: "flex", alignItems: "center", justifyContent: "space-between", zIndex: 30 }}>
           <div>
-            <div style={{ color: "#f1f5f9", fontSize: "27px", fontWeight: "900", letterSpacing: "-0.5px" }}>
-              Tactical Board
-            </div>
+            <div style={{ color: "#f1f5f9", fontSize: "27px", fontWeight: "900" }}>Tactical Board</div>
             <div style={{ color: "#94a3b8", fontSize: "14px" }}>7-a-side • Academy Planner</div>
           </div>
-
           <div style={{ display: "flex", gap: "8px" }}>
-            <button onClick={() => setLines(l => l.slice(0, -1))} style={{
-              width: "48px", height: "48px", borderRadius: "14px", background: "#334155",
-              color: "white", fontSize: "22px", border: "none"
-            }}>↩</button>
-            <button onClick={resetFormation} style={{
-              width: "48px", height: "48px", borderRadius: "14px", background: "#7f1d1d",
-              color: "white", fontSize: "20px", border: "none"
-            }}>⟳</button>
+            <button onClick={() => setLines(l => l.slice(0, -1))} style={{ width: "48px", height: "48px", borderRadius: "14px", background: "#334155", color: "white", fontSize: "22px", border: "none" }}>↩</button>
+            <button onClick={resetFormation} style={{ width: "48px", height: "48px", borderRadius: "14px", background: "#7f1d1d", color: "white", fontSize: "20px", border: "none" }}>⟳</button>
           </div>
         </div>
 
         {/* PITCH */}
-        <div ref={wrapperRef} style={{
-          flex: 1, display: "flex", justifyContent: "center", alignItems: "center",
-          padding: "12px", background: "#020617",
-        }}>
+        <div ref={wrapperRef} style={{ flex: 1, display: "flex", justifyContent: "center", alignItems: "center", padding: "12px", background: "#020617" }}>
           {ready && w > 0 && (
-            <div ref={pitchRef} style={{
-              width: `${w}px`, height: `${h}px`, borderRadius: "20px",
-              overflow: "hidden", boxShadow: "0 25px 70px rgba(0,0,0,0.65)",
-              position: "relative", border: "3px solid #e2e8f0",
-              touchAction: "none",
-            }}
-              onMouseDown={onDrawStart}
-              onMouseMove={onDrawMove}
-              onMouseUp={onDrawEnd}
-              onMouseLeave={onDrawEnd}
-              onTouchStart={onDrawStart}
-              onTouchMove={onDrawMove}
-              onTouchEnd={onDrawEnd}
+            <div ref={pitchRef} style={{ width: `${w}px`, height: `${h}px`, borderRadius: "20px", overflow: "hidden", boxShadow: "0 25px 70px rgba(0,0,0,0.65)", position: "relative", border: "3px solid #e2e8f0", touchAction: "none" }}
+              onMouseDown={onDrawStart} onMouseMove={onDrawMove} onMouseUp={onDrawEnd} onMouseLeave={onDrawEnd}
+              onTouchStart={onDrawStart} onTouchMove={onDrawMove} onTouchEnd={onDrawEnd}
             >
               {/* Grass */}
               {[...Array(16)].map((_, i) => (
-                <div key={i} style={{
-                  position: "absolute", top: `${i * (100 / 16)}%`, left: 0, right: 0,
-                  height: `${100 / 16}%`,
-                  background: i % 2 === 0 ? "#16a34a" : "#15803d",
-                }} />
+                <div key={i} style={{ position: "absolute", top: `${i * (100 / 16)}%`, width: "100%", height: `${100 / 16}%`, background: i % 2 === 0 ? "#16a34a" : "#15803d" }} />
               ))}
 
               <svg style={{ position: "absolute", inset: 0 }} width={w} height={h} viewBox={`0 0 ${w} ${h}`}>
@@ -239,110 +187,49 @@ export default function TacticalBoard() {
                   </marker>
                 </defs>
 
-                {/* Main Pitch Outline */}
-                <rect 
-                  x={w*0.04} y={h*0.03} 
-                  width={w*0.92} height={h*0.94}
-                  fill="none" stroke="#f1f5f9" strokeWidth="4" rx="8"
-                />
+                {/* Pitch Outline */}
+                <rect x={w*0.04} y={h*0.03} width={w*0.92} height={h*0.94} fill="none" stroke="#f1f5f9" strokeWidth="5" rx="12" />
 
                 {/* Halfway Line */}
-                <line 
-                  x1={w*0.04} y1={h*0.5} 
-                  x2={w*0.96} y2={h*0.5} 
-                  stroke="#f1f5f9" strokeWidth="4" 
-                />
+                <line x1={w*0.04} y1={h*0.5} x2={w*0.96} y2={h*0.5} stroke="#f1f5f9" strokeWidth="4" />
 
                 {/* Center Circle */}
-                <circle 
-                  cx={w*0.5} cy={h*0.5} 
-                  r={w*0.14} 
-                  fill="none" stroke="#f1f5f9" strokeWidth="4" 
-                />
+                <circle cx={w*0.5} cy={h*0.5} r={w*0.14} fill="none" stroke="#f1f5f9" strokeWidth="4" />
                 <circle cx={w*0.5} cy={h*0.5} r="4" fill="#f1f5f9" />
 
                 {/* Corner Arcs */}
-                <path d={`M${w*0.04},${h*0.03} Q${w*0.08},${h*0.03} ${w*0.08},${h*0.07}`} fill="none" stroke="#f1f5f9" strokeWidth="4"/>
-                <path d={`M${w*0.96},${h*0.03} Q${w*0.92},${h*0.03} ${w*0.92},${h*0.07}`} fill="none" stroke="#f1f5f9" strokeWidth="4"/>
-                <path d={`M${w*0.04},${h*0.97} Q${w*0.08},${h*0.97} ${w*0.08},${h*0.93}`} fill="none" stroke="#f1f5f9" strokeWidth="4"/>
-                <path d={`M${w*0.96},${h*0.97} Q${w*0.92},${h*0.97} ${w*0.92},${h*0.93}`} fill="none" stroke="#f1f5f9" strokeWidth="4"/>
+                <path d={`M ${w*0.04},${h*0.03} Q ${w*0.09},${h*0.03} ${w*0.09},${h*0.08}`} fill="none" stroke="#f1f5f9" strokeWidth="4"/>
+                <path d={`M ${w*0.96},${h*0.03} Q ${w*0.91},${h*0.03} ${w*0.91},${h*0.08}`} fill="none" stroke="#f1f5f9" strokeWidth="4"/>
+                <path d={`M ${w*0.04},${h*0.97} Q ${w*0.09},${h*0.97} ${w*0.09},${h*0.92}`} fill="none" stroke="#f1f5f9" strokeWidth="4"/>
+                <path d={`M ${w*0.96},${h*0.97} Q ${w*0.91},${h*0.97} ${w*0.91},${h*0.92}`} fill="none" stroke="#f1f5f9" strokeWidth="4"/>
 
-                {/* === BOTTOM (Defensive) Goal Area === */}
-                {/* Penalty Box */}
-                <rect 
-                  x={w*0.04} y={h*0.58} 
-                  width={w*0.28} height={h*0.37}
-                  fill="none" stroke="#f1f5f9" strokeWidth="3.5" 
-                />
-                {/* Goal Area (6yd) */}
-                <rect 
-                  x={w*0.04} y={h*0.72} 
-                  width={w*0.18} height={h*0.23}
-                  fill="none" stroke="#f1f5f9" strokeWidth="3.5" 
-                />
-                {/* Goal */}
-                <line 
-                  x1={w*0.04} y1={h*0.74} 
-                  x2={w*0.04} y2={h*0.86}
-                  stroke="#f1f5f9" strokeWidth="8" strokeLinecap="round" 
-                />
+                {/* TOP GOAL (Attacking) */}
+                <rect x={w*0.22} y={h*0.04} width={w*0.56} height={h*0.12} fill="none" stroke="#f1f5f9" strokeWidth="4" /> {/* Goal line area */}
+                <rect x={w*0.04} y={h*0.08} width={w*0.28} height={h*0.22} fill="none" stroke="#f1f5f9" strokeWidth="3.5" /> {/* Penalty */}
+                <rect x={w*0.08} y={h*0.11} width={w*0.18} height={h*0.15} fill="none" stroke="#f1f5f9" strokeWidth="3.5" /> {/* Goal area */}
+                <line x1={w*0.96} y1={h*0.14} x2={w*0.96} y2={h*0.26} stroke="#f1f5f9" strokeWidth="9" strokeLinecap="round" /> {/* Goal post */}
 
-                {/* === TOP (Attacking) Goal Area === */}
-                {/* Penalty Box */}
-                <rect 
-                  x={w*0.04} y={h*0.05} 
-                  width={w*0.28} height={h*0.37}
-                  fill="none" stroke="#f1f5f9" strokeWidth="3.5" 
-                />
-                {/* Goal Area */}
-                <rect 
-                  x={w*0.04} y={h*0.10} 
-                  width={w*0.18} height={h*0.23}
-                  fill="none" stroke="#f1f5f9" strokeWidth="3.5" 
-                />
-                {/* Goal */}
-                <line 
-                  x1={w*0.96} y1={h*0.14} 
-                  x2={w*0.96} y2={h*0.26}
-                  stroke="#f1f5f9" strokeWidth="8" strokeLinecap="round" 
-                />
+                {/* BOTTOM GOAL (Defensive) */}
+                <rect x={w*0.22} y={h*0.84} width={w*0.56} height={h*0.12} fill="none" stroke="#f1f5f9" strokeWidth="4" />
+                <rect x={w*0.04} y={h*0.70} width={w*0.28} height={h*0.22} fill="none" stroke="#f1f5f9" strokeWidth="3.5" />
+                <rect x={w*0.08} y={h*0.74} width={w*0.18} height={h*0.15} fill="none" stroke="#f1f5f9" strokeWidth="3.5" />
+                <line x1={w*0.04} y1={h*0.74} x2={w*0.04} y2={h*0.86} stroke="#f1f5f9" strokeWidth="9" strokeLinecap="round" />
 
                 {/* Drawn Lines */}
-                {lines.map((l, i) => (
-                  <line key={i} x1={l.x1} y1={l.y1} x2={l.x2} y2={l.y2}
-                    stroke="#fde047" strokeWidth="5.5" strokeLinecap="round" markerEnd="url(#arrow)" />
-                ))}
-
-                {drawing && (
-                  <line x1={drawing.x1} y1={drawing.y1} x2={drawing.x2} y2={drawing.y2}
-                    stroke="#fde047" strokeWidth="5.5" strokeLinecap="round"
-                    strokeDasharray="8 5" markerEnd="url(#arrow)" />
-                )}
+                {lines.map((l, i) => <line key={i} x1={l.x1} y1={l.y1} x2={l.x2} y2={l.y2} stroke="#fde047" strokeWidth="5.5" strokeLinecap="round" markerEnd="url(#arrow)" />)}
+                {drawing && <line x1={drawing.x1} y1={drawing.y1} x2={drawing.x2} y2={drawing.y2} stroke="#fde047" strokeWidth="5.5" strokeLinecap="round" strokeDasharray="8 5" markerEnd="url(#arrow)" />}
               </svg>
 
               {/* Players */}
               {players.map((pos) => (
-                <Draggable
-                  key={pos.id}
-                  position={{ x: pos.x - jerseySize / 2, y: pos.y - jerseySize / 2 }}
-                  bounds="parent"
-                  onStart={(e) => onPlayerPointerDown(pos.id, e)}
-                  onDrag={(e) => onDragMove(pos.id, e)}
+                <Draggable key={pos.id} position={{ x: pos.x - jerseySize/2, y: pos.y - jerseySize/2 }} bounds="parent"
+                  onStart={e => onPlayerPointerDown(pos.id, e)}
+                  onDrag={e => onDragMove(pos.id, e)}
                   onStop={(e, data) => onDragStop(pos.id, e, data)}
                 >
-                  <div className="player-token" style={{
-                    position: "absolute", width: `${tokenWidth}px`, textAlign: "center",
-                    cursor: "grab", zIndex: 20,
-                    transform: selectedPos === pos.id ? "scale(1.15)" : "scale(1)",
-                    transition: "transform 0.2s ease, filter 0.2s ease",
-                    filter: selectedPos === pos.id ? "drop-shadow(0 0 18px #fde047)" : "drop-shadow(0 10px 20px rgba(0,0,0,0.5))",
-                  }}>
+                  <div className="player-token" style={{ position: "absolute", width: `${tokenWidth}px`, textAlign: "center", cursor: "grab", zIndex: 20, transform: selectedPos === pos.id ? "scale(1.15)" : "scale(1)", transition: "all 0.2s" }}>
                     <JerseyIcon size={jerseySize} color={assigned[pos.id] ? "#fde047" : "#f8fafc"} />
-                    <div style={{
-                      color: "#f8fafc", fontWeight: "800", fontSize: `${fontSize}px`,
-                      marginTop: "6px", textShadow: "0 2px 8px rgba(0,0,0,0.85)",
-                      whiteSpace: "nowrap", lineHeight: 1.05,
-                    }}>
+                    <div style={{ color: "#f8fafc", fontWeight: "800", fontSize: `${fontSize}px`, marginTop: "6px", textShadow: "0 2px 8px rgba(0,0,0,0.85)" }}>
                       {assigned[pos.id] || pos.label}
                     </div>
                   </div>
@@ -352,48 +239,23 @@ export default function TacticalBoard() {
           )}
         </div>
 
-        {/* Bottom Sheet - same as before */}
-        {sheetOpen && <div onClick={() => { setSheetOpen(false); setSelectedPos(null); }}
-          style={{ position: "absolute", inset: 0, background: "rgba(2,6,23,0.75)", zIndex: 40 }} />}
+        {/* Bottom Sheet (same as previous) */}
+        {sheetOpen && <div onClick={() => {setSheetOpen(false); setSelectedPos(null);}} style={{position:"absolute", inset:0, background:"rgba(2,6,23,0.75)", zIndex:40}} />}
 
-        <div style={{
-          position: "absolute", left: 0, right: 0, bottom: 0, zIndex: 50,
-          background: "#1e2937", borderRadius: "28px 28px 0 0",
-          transform: sheetOpen ? "translateY(0)" : "translateY(100%)",
-          transition: "transform 0.3s cubic-bezier(0.32, 0.72, 0, 1)",
-          maxHeight: "68vh", overflow: "hidden", boxShadow: "0 -20px 50px rgba(0,0,0,0.7)",
-        }}>
-          {/* Bottom sheet content (unchanged) */}
+        <div style={{ position: "absolute", left: 0, right: 0, bottom: 0, zIndex: 50, background: "#1e2937", borderRadius: "28px 28px 0 0", transform: sheetOpen ? "translateY(0)" : "translateY(100%)", transition: "transform 0.3s cubic-bezier(0.32,0.72,0,1)", maxHeight: "68vh", overflow: "hidden" }}>
           <div style={{ padding: "14px 0", display: "flex", justifyContent: "center" }}>
             <div style={{ width: "50px", height: "5px", background: "#475569", borderRadius: "999px" }} />
           </div>
-
           <div style={{ padding: "0 20px 20px" }}>
-            <div style={{ color: "#f1f5f9", fontSize: "23px", fontWeight: "800", marginBottom: "16px" }}>
-              Select Player
-            </div>
-
+            <div style={{ color: "#f1f5f9", fontSize: "23px", fontWeight: "800", marginBottom: "16px" }}>Select Player</div>
             <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: "12px", maxHeight: "55vh", overflowY: "auto" }}>
-              {squad.map((player) => {
+              {squad.map(player => {
                 const isAssigned = Object.values(assigned).includes(player);
                 const isHere = selectedPos && assigned[selectedPos] === player;
                 return (
-                  <div
-                    key={player}
-                    onClick={() => (!isAssigned || isHere) && assignPlayer(player)}
-                    style={{
-                      background: isHere ? "#fde047" : isAssigned ? "#334155" : "#475569",
-                      borderRadius: "16px", padding: "18px 12px", textAlign: "center",
-                      opacity: isAssigned && !isHere ? 0.5 : 1,
-                    }}
-                  >
+                  <div key={player} onClick={() => (!isAssigned || isHere) && assignPlayer(player)} style={{ background: isHere ? "#fde047" : isAssigned ? "#334155" : "#475569", borderRadius: "16px", padding: "18px 12px", textAlign: "center", opacity: isAssigned && !isHere ? 0.5 : 1 }}>
                     <JerseyIcon size={52} color={isHere ? "#0f172a" : "#f8fafc"} />
-                    <div style={{
-                      marginTop: "10px", fontWeight: "700", fontSize: "16.5px",
-                      color: isHere ? "#0f172a" : "#f8fafc"
-                    }}>
-                      {player}
-                    </div>
+                    <div style={{ marginTop: "10px", fontWeight: "700", fontSize: "16.5px", color: isHere ? "#0f172a" : "#f8fafc" }}>{player}</div>
                   </div>
                 );
               })}
