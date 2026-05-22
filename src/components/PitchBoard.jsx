@@ -72,11 +72,12 @@ export default function PitchBoard() {
   return (
     <div style={{
       display: "flex",
+      flexDirection: "column",
+      width: "100%",
       height: "100vh",
       fontFamily: "Inter, sans-serif",
       overflow: "hidden"
     }}>
-
       {/* LEFT PANEL */}
       <div style={{
         width: "230px",
@@ -169,13 +170,13 @@ export default function PitchBoard() {
           style={{
             position: "relative",
             width: "100%",
-            maxWidth: "550px",
             aspectRatio: "9/16",
             background: "#14532d",
             borderRadius: "16px",
             overflow: "hidden",
             boxShadow: "0 12px 30px rgba(0,0,0,0.45)",
-            margin: "0 auto"
+            margin: "0 auto",
+            maxHeight: "100vh"
           }}
         >
           {/* Grass stripes */}
@@ -191,25 +192,12 @@ export default function PitchBoard() {
 
           {/* Pitch lines + GOAL BOXES */}
           <svg width="100%" height="100%" style={{ position: "absolute" }}>
-            {/* Outer box */}
             <rect x="5%" y="5%" width="90%" height="90%" fill="none" stroke="white" strokeWidth="3" />
-
-            {/* Halfway line */}
             <line x1="5%" y1="50%" x2="95%" y2="50%" stroke="white" strokeWidth="3" />
-
-            {/* Centre circle */}
             <circle cx="50%" cy="50%" r="8%" stroke="white" strokeWidth="3" fill="none" />
-
-            {/* TOP GOAL BOX */}
             <rect x="30%" y="5%" width="40%" height="10%" fill="none" stroke="white" strokeWidth="3" />
-
-            {/* TOP GOAL */}
             <rect x="40%" y="3%" width="20%" height="2%" fill="none" stroke="white" strokeWidth="3" />
-
-            {/* BOTTOM GOAL BOX */}
             <rect x="30%" y="85%" width="40%" height="10%" fill="none" stroke="white" strokeWidth="3" />
-
-            {/* BOTTOM GOAL */}
             <rect x="40%" y="95%" width="20%" height="2%" fill="none" stroke="white" strokeWidth="3" />
           </svg>
 
