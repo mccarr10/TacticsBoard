@@ -28,7 +28,7 @@ const JerseyIcon = ({ isOpposition }) => (
   </svg>
 );
 
-// --- 7‑PLAYER FORMATION (our team) ---
+// --- TEAM FORMATIONS ---
 const formation = [
   { id: "GK", label: "Goalkeeper", x: 180, y: 700 },
   { id: "DEF1", label: "Defender 1", x: 100, y: 560 },
@@ -39,7 +39,6 @@ const formation = [
   { id: "STR", label: "Striker", x: 180, y: 260 }
 ];
 
-// --- OPPOSITION TEAM FORMATION ---
 const formationOpposition = [
   { id: "OPP1", label: "Opposition 1", x: 180, y: 100 },
   { id: "OPP2", label: "Opposition 2", x: 100, y: 240 },
@@ -52,8 +51,15 @@ const formationOpposition = [
 
 export default function PitchBoard() {
   const [assigned, setAssigned] = useState({});
+  const [selectedPos, setSelectedPos] = useState(null);
   const [lines, setLines] = useState([]);
   const [current, setCurrent] = useState(null);
+
+  const assignPlayer = (player) => {
+    if (!selectedPos) return;
+    setAssigned({ ...assigned, [selectedPos]: player });
+    setSelectedPos(null);
+  };
 
   const start = (e) => {
     const r = e.currentTarget.getBoundingClientRect();
@@ -86,49 +92,65 @@ export default function PitchBoard() {
   return (
     <div style={{
       display: "flex",
-      flexDirection: "column",
-      width: "100%",
       height: "100vh",
       fontFamily: "Inter, sans-serif",
-      overflow: "hidden"
     }}>
-      {/* Right Side */}
+      {/* LEFT SIDEBAR */}
+      <div style={{
+        width: "230px",
+        background: "#1e293b",
+        color: "white",
+        padding: "12px",
+        overflowY: "auto",
+        borderRight: "3px solid #0f172a"
+      }}>
+        <h2 style={{ marginBottom: "10px", fontSize: "18px" }}>Squad List</h2>
+
+        {selectedPos && (
+          <div style={{
+            background: "#facc15",
+            color: "#000",
+            padding: "8px",
+            borderRadius: "8px",
+            marginBottom: "10px",
+            fontWeight: 700,
+            textAlign: "center",
+            fontSize: "14px"
+          }}>
+            Assigning to: {selectedPos}
+          </div>
+        )}
+
+        <h3 style={{ marginBottom: "6px", fontSize: "15px" }}>Players</h3>
+
+        {squad.map((player) => (
+          <div key={player} onClick={() => assignPlayer(player)} style={{
+            display: "flex",
+            alignItems: "center",
+            gap: "8px",
+            padding: "8px",
+            marginBottom: "6px",
+            background: "#334155",
+            borderRadius: "10px",
+            cursor: "pointer"
+          }}>
+            <JerseyIcon />
+            <span style={{ fontSize: "14px", fontWeight: 500 }}>{player}</span>
+          </div>
+        ))}
+      </div>
+
+      {/* PITCH */}
       <div style={{
         flex: 1,
         padding: "10px",
-        overflowY: "auto",
         display: "flex",
         flexDirection: "column",
         alignItems: "center"
       }}>
-        <h2 style={{ margin: 8, fontSize: "18px" }}>7‑Player Formation</h2>
+        <h2 style={{ marginBottom: "8px", fontSize: "18px" }}>7‑Player Formation</h2>
 
-        <div style={{
-          display: "flex",
-          gap: "8px",
-          marginBottom: "8px",
-          width: "100%",
-          justifyContent: "center"
-        }}>
-          <button onClick={undoArrow} style={{
-            padding: "6px 10px",
-            background: "#334155",
-            borderRadius: "8px",
-            border: "none",
-            color: "white",
-            cursor: "pointer"
-          }}>Undo Arrow</button>
-          <button onClick={clearArrows} style={{
-            padding: "6px 10px",
-            background: "#b91c1c",
-            borderRadius: "8px",
-            border: "none",
-            color: "white",
-            cursor: "pointer"
-          }}>Clear All Arrows</button>
-        </div>
-
-        {/* Pitch */}
+        {/* FIELD */}
         <div
           onMouseDown={start}
           onMouseMove={move}
@@ -145,7 +167,7 @@ export default function PitchBoard() {
             maxHeight: "100vh"
           }}
         >
-          {/* Grass */}
+          {/* Grass stripes */}
           {[...Array(16)].map((_, i) => (
             <div key={i} style={{
               position: "absolute",
@@ -156,49 +178,49 @@ export default function PitchBoard() {
             }} />
           ))}
 
-          {/* Arrows */}
-          <svg width="100%" height="100%" style={{ position: "absolute" }}>
-            {lines.map((line, index) => (
-              <line
-                key={index}
-                x1={line.x1}
-                y1={line.y1}
-                x2={line.x2}
-                y2={line.y2}
-                stroke="#f43f5e"
-                strokeWidth="4"
-              />
-            ))}
-          </svg>
-
           {/* Players */}
           {formation.map((pos) => (
             <Draggable
               key={pos.id}
               defaultPosition={{ x: pos.x, y: pos.y }}
               bounds="parent"
-              position={{ x: pos.x, y: pos.y }}
             >
-              <div style={{ position: "absolute" }}>
+              <div onClick={() => setSelectedPos(pos.id)} style={{
+                position: "absolute",
+                textAlign: "center",
+                cursor: "pointer",
+                padding: "4px"
+              }}>
                 <JerseyIcon />
-                <div style={{ color: "white" }}>{pos.label}</div>
+                <div style={{
+                  fontWeight: 700,
+                  color: "white",
+                  fontSize: "12px",
+                  marginTop: "2px"
+                }}>
+                  {assigned[pos.id] || pos.label}
+                </div>
               </div>
             </Draggable>
           ))}
 
           {/* Opposition Players */}
           {formationOpposition.map((pos) => (
-            <div
-              key={pos.id}
-              style={{
-                position: "absolute",
-                left: `${pos.x}px`,
-                top: `${pos.y}px`,
-                textAlign: "center"
-              }}
-            >
+            <div key={pos.id} style={{
+              position: "absolute",
+              left: `${pos.x}px`,
+              top: `${pos.y}px`,
+              textAlign: "center"
+            }}>
               <JerseyIcon isOpposition />
-              <div style={{ color: "#f87171" }}>{pos.label}</div>
+              <div style={{
+                fontWeight: 700,
+                color: "#f87171",
+                fontSize: "12px",
+                marginTop: "2px"
+              }}>
+                {pos.label}
+              </div>
             </div>
           ))}
         </div>
