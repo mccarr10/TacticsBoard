@@ -16,13 +16,13 @@ const JerseyIcon = ({ size = 52, color = "white" }) => (
 );
 
 const FORMATION = [
-  { id: "GK", label: "Goalkeeper", xPct: 0.50, yPct: 0.88 },
+  { id: "GK", label: "Goalkeeper", xPct: 0.50, yPct: 0.88 },   // Bottom
   { id: "DEF1", label: "Defender 1", xPct: 0.27, yPct: 0.68 },
   { id: "DEF2", label: "Defender 2", xPct: 0.73, yPct: 0.68 },
   { id: "CM", label: "Central Mid", xPct: 0.50, yPct: 0.48 },
   { id: "WM1", label: "Wide Mid 1", xPct: 0.14, yPct: 0.36 },
   { id: "WM2", label: "Wide Mid 2", xPct: 0.86, yPct: 0.36 },
-  { id: "STR", label: "Striker", xPct: 0.50, yPct: 0.16 },
+  { id: "STR", label: "Striker", xPct: 0.50, yPct: 0.16 },     // Top
 ];
 
 const DRAG_THRESHOLD = 8;
@@ -48,10 +48,9 @@ export default function TacticalBoard() {
 
     let w, h;
 
-    // Optimized for iPhone portrait + tablet
     if (aw / ah < 0.72) {
       w = Math.min(aw * 0.96, 620);
-      h = w * 1.42; // taller pitch for better visual balance
+      h = w * 1.42;
     } else {
       h = ah * 0.94;
       w = h * 0.71;
@@ -86,7 +85,6 @@ export default function TacticalBoard() {
     };
   };
 
-  // Drawing handlers
   const onDrawStart = (e) => {
     if (e.target.closest(".player-token")) return;
     e.preventDefault();
@@ -111,7 +109,6 @@ export default function TacticalBoard() {
     setDrawing(null);
   };
 
-  // Drag handlers
   const dragStartRef = useRef({});
   const didDragRef = useRef({});
 
@@ -157,21 +154,10 @@ export default function TacticalBoard() {
     setSheetOpen(false);
   };
 
-  const clearAssignment = () => {
-    if (!selectedPos) return;
-    setAssigned((a) => {
-      const n = { ...a };
-      delete n[selectedPos];
-      return n;
-    });
-    setSelectedPos(null);
-    setSheetOpen(false);
-  };
-
   const resetFormation = () => {
     setAssigned({});
     setLines([]);
-    measure(); // reset positions
+    measure();
   };
 
   const { w, h } = dims;
@@ -222,12 +208,14 @@ export default function TacticalBoard() {
           padding: "12px", background: "#020617", position: "relative",
         }}>
           {ready && w > 0 && (
-            <div ref={pitchRef} style={{
-              width: `${w}px`, height: `${h}px`, borderRadius: "20px",
-              overflow: "hidden", boxShadow: "0 25px 70px rgba(0,0,0,0.65)",
-              position: "relative", border: "3px solid #e2e8f0",
-              touchAction: "none",
-            }}
+            <div 
+              ref={pitchRef}
+              style={{
+                width: `${w}px`, height: `${h}px`, borderRadius: "20px",
+                overflow: "hidden", boxShadow: "0 25px 70px rgba(0,0,0,0.65)",
+                position: "relative", border: "3px solid #e2e8f0",
+                touchAction: "none",
+              }}
               onMouseDown={onDrawStart}
               onMouseMove={onDrawMove}
               onMouseUp={onDrawEnd}
@@ -245,7 +233,6 @@ export default function TacticalBoard() {
                 }} />
               ))}
 
-              {/* Professional Pitch Markings */}
               <svg style={{ position: "absolute", inset: 0 }} width={w} height={h} viewBox={`0 0 ${w} ${h}`}>
                 <defs>
                   <marker id="arrow" markerWidth="9" markerHeight="9" refX="8" refY="4.5" orient="auto">
@@ -253,15 +240,12 @@ export default function TacticalBoard() {
                   </marker>
                 </defs>
 
-                {/* Outer Lines */}
                 <rect x={w*0.035} y={h*0.025} width={w*0.93} height={h*0.95}
                   fill="none" stroke="#f8fafc" strokeWidth="4" />
 
-                {/* Halfway Line */}
                 <line x1={w*0.035} y1={h*0.5} x2={w*0.965} y2={h*0.5}
                   stroke="#f8fafc" strokeWidth="4" />
 
-                {/* Center Circle */}
                 <circle cx={w*0.5} cy={h*0.5} r={w*0.135} fill="none" stroke="#f8fafc" strokeWidth="4" />
 
                 {/* Penalty Areas */}
@@ -282,7 +266,6 @@ export default function TacticalBoard() {
                 <line x1={w*0.965} y1={h*0.41} x2={w*0.965} y2={h*0.59}
                   stroke="#f8fafc" strokeWidth="9" strokeLinecap="round" />
 
-                {/* Drawn Tactics Lines */}
                 {lines.map((l, i) => (
                   <line key={i} x1={l.x1} y1={l.y1} x2={l.x2} y2={l.y2}
                     stroke="#fde047" strokeWidth="5.5" strokeLinecap="round" markerEnd="url(#arrow)" />
@@ -295,7 +278,6 @@ export default function TacticalBoard() {
                 )}
               </svg>
 
-              {/* Players */}
               {players.map((pos) => (
                 <Draggable
                   key={pos.id}
@@ -327,7 +309,7 @@ export default function TacticalBoard() {
           )}
         </div>
 
-        {/* Bottom Sheet */}
+        {/* Bottom Sheet (unchanged) */}
         {sheetOpen && <div onClick={() => { setSheetOpen(false); setSelectedPos(null); }}
           style={{ position: "absolute", inset: 0, background: "rgba(2,6,23,0.75)", zIndex: 40 }} />}
 
@@ -360,7 +342,6 @@ export default function TacticalBoard() {
                       background: isHere ? "#fde047" : isAssigned ? "#334155" : "#475569",
                       borderRadius: "16px", padding: "18px 12px", textAlign: "center",
                       opacity: isAssigned && !isHere ? 0.5 : 1,
-                      transition: "all 0.15s",
                     }}
                   >
                     <JerseyIcon size={52} color={isHere ? "#0f172a" : "#f8fafc"} />
