@@ -137,33 +137,33 @@ export default function TacticalBoard() {
  };
 
  const { w, h } = dims;
- const jerseySize = Math.max(70, Math.min(110, w * 0.22));
- const fontSize = Math.max(13, Math.min(18, w * 0.048));
- const tokenWidth = jerseySize + 32;
+ const jerseySize = Math.max(90, Math.min(145, w * 0.29));
+ const fontSize = Math.max(16, Math.min(24, w * 0.062));
+ const tokenWidth = jerseySize + 40;
 
  return (
    <div style={{ width: "100vw", height: "100dvh", background: "#020617", position: "fixed", inset: 0, display: "flex", flexDirection: "column" }}>
      
      {/* Header - Fixed to top */}
-     <div style={{ height: "90px", padding: "14px 18px", background: "linear-gradient(135deg, #1e2937 0%, #0f172a 100%)", borderBottom: "2px solid #334155", display: "flex", alignItems: "center", justifyContent: "space-between", flexShrink: 0, zIndex: 100 }}>
+     <div style={{ height: "110px", padding: "16px 20px", background: "linear-gradient(135deg, #1e2937 0%, #0f172a 100%)", borderBottom: "2px solid #334155", display: "flex", alignItems: "center", justifyContent: "space-between", flexShrink: 0, zIndex: 100 }}>
        <div>
-         <div style={{ color: "#f1f5f9", fontSize: "28px", fontWeight: "950", letterSpacing: "-0.8px" }}>Tactical Board</div>
-         <div style={{ color: "#cbd5e1", fontSize: "13px", marginTop: "3px", fontWeight: "500" }}>7-a-side • Academy Planner</div>
+         <div style={{ color: "#f1f5f9", fontSize: "36px", fontWeight: "950", letterSpacing: "-0.8px" }}>Tactical Board</div>
+         <div style={{ color: "#cbd5e1", fontSize: "14px", marginTop: "4px", fontWeight: "500" }}>7-a-side • Academy Planner</div>
        </div>
-       <div style={{ display: "flex", gap: "10px" }}>
+       <div style={{ display: "flex", gap: "12px" }}>
          <button 
            onClick={() => setLines(l => l.slice(0, -1))} 
            title="Undo last line"
            style={{ 
-             padding: "10px 14px",
+             padding: "12px 18px",
              display: "flex", 
              alignItems: "center", 
-             gap: "6px",
-             borderRadius: "10px", 
+             gap: "8px",
+             borderRadius: "12px", 
              background: "#334155", 
              color: "#e2e8f0", 
-             fontSize: "13px",
-             fontWeight: "600",
+             fontSize: "14px",
+             fontWeight: "700",
              border: "none", 
              cursor: "pointer", 
              transition: "all 0.25s ease",
@@ -186,15 +186,15 @@ export default function TacticalBoard() {
            onClick={resetFormation} 
            title="Reset entire formation"
            style={{ 
-             padding: "10px 14px",
+             padding: "12px 18px",
              display: "flex", 
              alignItems: "center", 
-             gap: "6px",
-             borderRadius: "10px", 
+             gap: "8px",
+             borderRadius: "12px", 
              background: "#b91c1c", 
              color: "#fef2f2", 
-             fontSize: "13px",
-             fontWeight: "600",
+             fontSize: "14px",
+             fontWeight: "700",
              border: "none", 
              cursor: "pointer", 
              transition: "all 0.25s ease",
@@ -274,15 +274,15 @@ export default function TacticalBoard() {
              {/* Goal Area (6 yards / smaller box) */}
              <rect x={w * 0.26} y={h * 0.06} width={w * 0.48} height={h * 0.08} fill="none" stroke="#f8fafc" strokeWidth="3" />
              
-             {/* TOP GOAL POSTS AND NET */}
+             {/* TOP GOAL - Simple net style */}
              {/* Left post */}
-             <rect x={w * 0.04 - 2} y={h * 0.02} width="4" height={h * 0.04} fill="#f8fafc" />
+             <rect x={w * 0.038} y={h * 0.015} width="4" height={h * 0.055} fill="#f8fafc" />
              {/* Right post */}
-             <rect x={w * 0.96} y={h * 0.02} width="4" height={h * 0.04} fill="#f8fafc" />
+             <rect x={w * 0.958} y={h * 0.015} width="4" height={h * 0.055} fill="#f8fafc" />
              {/* Crossbar */}
-             <line x1={w * 0.04} y1={h * 0.02} x2={w * 0.96} y2={h * 0.02} stroke="#f8fafc" strokeWidth="3" />
+             <line x1={w * 0.042} y1={h * 0.015} x2={w * 0.958} y2={h * 0.015} stroke="#f8fafc" strokeWidth="3" />
              {/* Goal line */}
-             <line x1={w * 0.04} y1={h * 0.06} x2={w * 0.96} y2={h * 0.06} stroke="#f8fafc" strokeWidth="3" />
+             <line x1={w * 0.042} y1={h * 0.07} x2={w * 0.958} y2={h * 0.07} stroke="#f8fafc" strokeWidth="3" />
 
              {/* BOTTOM GOAL AREA - Clean simple boxes */}
              {/* Penalty Area (18 yards / larger box) */}
@@ -290,15 +290,15 @@ export default function TacticalBoard() {
              {/* Goal Area (6 yards / smaller box) */}
              <rect x={w * 0.26} y={h * 0.86} width={w * 0.48} height={h * 0.08} fill="none" stroke="#f8fafc" strokeWidth="3" />
              
-             {/* BOTTOM GOAL POSTS AND NET */}
+             {/* BOTTOM GOAL - Simple net style */}
              {/* Left post */}
-             <rect x={w * 0.04 - 2} y={h * 0.94} width="4" height={h * 0.04} fill="#f8fafc" />
+             <rect x={w * 0.038} y={h * 0.93} width="4" height={h * 0.055} fill="#f8fafc" />
              {/* Right post */}
-             <rect x={w * 0.96} y={h * 0.94} width="4" height={h * 0.04} fill="#f8fafc" />
+             <rect x={w * 0.958} y={h * 0.93} width="4" height={h * 0.055} fill="#f8fafc" />
              {/* Crossbar */}
-             <line x1={w * 0.04} y1={h * 0.94} x2={w * 0.96} y2={h * 0.94} stroke="#f8fafc" strokeWidth="3" />
+             <line x1={w * 0.042} y1={h * 0.93} x2={w * 0.958} y2={h * 0.93} stroke="#f8fafc" strokeWidth="3" />
              {/* Goal line */}
-             <line x1={w * 0.04} y1={h * 0.98} x2={w * 0.96} y2={h * 0.98} stroke="#f8fafc" strokeWidth="3" />
+             <line x1={w * 0.042} y1={h * 0.985} x2={w * 0.958} y2={h * 0.985} stroke="#f8fafc" strokeWidth="3" />
 
              {/* Drawn tactical lines */}
              {lines.map((l, i) => (
@@ -394,18 +394,18 @@ export default function TacticalBoard() {
        </div>
 
        {/* Sheet content */}
-       <div style={{ padding: "0 20px 32px" }}>
-         <div style={{ marginBottom: "24px" }}>
-           <div style={{ color: "#f1f5f9", fontSize: "26px", fontWeight: "900", marginBottom: "8px" }}>
+       <div style={{ padding: "0 24px 40px" }}>
+         <div style={{ marginBottom: "28px" }}>
+           <div style={{ color: "#f1f5f9", fontSize: "32px", fontWeight: "900", marginBottom: "10px" }}>
              {selectedPos && FORMATION.find(f => f.id === selectedPos)?.label}
            </div>
-           <div style={{ color: "#94a3b8", fontSize: "16px", fontWeight: "500" }}>
+           <div style={{ color: "#94a3b8", fontSize: "18px", fontWeight: "500" }}>
              Pick a player from your squad
            </div>
          </div>
 
          {/* Player grid - larger buttons */}
-         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(140px, 1fr))", gap: "14px", marginBottom: "24px" }}>
+         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(165px, 1fr))", gap: "16px", marginBottom: "28px" }}>
            {squad.map((player, idx) => {
              const isAssigned = Object.values(assigned).includes(player);
              return (
@@ -415,13 +415,13 @@ export default function TacticalBoard() {
                    if (!isAssigned) assignPlayer(player);
                  }}
                  style={{
-                   padding: "18px 14px",
+                   padding: "22px 16px",
                    background: isAssigned ? "#1f2937" : assigned[selectedPos] === player ? "#fde047" : "#334155",
                    color: assigned[selectedPos] === player ? "#111" : isAssigned ? "#64748b" : "#f1f5f9",
                    border: "2.5px solid " + (assigned[selectedPos] === player ? "#fde047" : "#475569"),
-                   borderRadius: "12px",
+                   borderRadius: "14px",
                    fontWeight: "700",
-                   fontSize: "16px",
+                   fontSize: "18px",
                    cursor: isAssigned ? "not-allowed" : "pointer",
                    transition: "all 0.25s ease",
                    opacity: isAssigned ? 0.5 : 1,
@@ -450,8 +450,8 @@ export default function TacticalBoard() {
          </div>
 
          {/* Info box */}
-         <div style={{ padding: "16px", background: "linear-gradient(135deg, #0f172a 0%, #1a1f35 100%)", borderRadius: "12px", color: "#cbd5e1", fontSize: "13px", lineHeight: "1.6", border: "1px solid #334155" }}>
-           <div style={{ marginBottom: "8px" }}>💡 <strong>Tip:</strong> Already assigned players appear grayed out. Click outside to close.</div>
+         <div style={{ padding: "18px", background: "linear-gradient(135deg, #0f172a 0%, #1a1f35 100%)", borderRadius: "14px", color: "#cbd5e1", fontSize: "14px", lineHeight: "1.7", border: "1px solid #334155" }}>
+           <div style={{ marginBottom: "10px" }}>💡 <strong>Tip:</strong> Already assigned players appear grayed out. Click outside to close.</div>
            <div>Drag players on the pitch to reposition them, or click to change assignments.</div>
          </div>
        </div>
