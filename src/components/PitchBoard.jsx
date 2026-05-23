@@ -499,78 +499,130 @@ export default function TacticalBoard() {
             ))}
 
             {/* PITCH MARKINGS */}
-            <svg
-              width={w}
-              height={h}
-              viewBox={`0 0 ${w} ${h}`}
-              style={{ position: "absolute", inset: 0 }}
-            >
-              <defs>
-                <marker
-                  id="arrow"
-                  markerWidth="10"
-                  markerHeight="10"
-                  refX="9"
-                  refY="3"
-                  orient="auto"
-                >
-                  <path d="M0,0 L0,6 L9,3 z" fill="#fde047" />
-                </marker>
-              </defs>
+<svg
+  width={w}
+  height={h}
+  viewBox={`0 0 ${w} ${h}`}
+  style={{ position: "absolute", inset: 0 }}
+>
+  <defs>
+    <marker
+      id="arrow"
+      markerWidth="10"
+      markerHeight="10"
+      refX="9"
+      refY="3"
+      orient="auto"
+    >
+      <path d="M0,0 L0,6 L9,3 z" fill="#fde047" />
+    </marker>
+  </defs>
 
-              <rect
-                x={w * 0.04}
-                y={h * 0.04}
-                width={w * 0.92}
-                height={h * 0.92}
-                fill="none"
-                stroke="#fff"
-                strokeWidth="4"
-              />
+  {/* Outer boundary */}
+  <rect
+    x={w * 0.04}
+    y={h * 0.04}
+    width={w * 0.92}
+    height={h * 0.92}
+    fill="none"
+    stroke="#fff"
+    strokeWidth="4"
+  />
 
-              <line
-                x1={w * 0.04}
-                y1={h * 0.5}
-                x2={w * 0.96}
-                y2={h * 0.5}
-                stroke="#fff"
-                strokeWidth="3"
-              />
+  {/* Halfway line */}
+  <line
+    x1={w * 0.04}
+    y1={h * 0.5}
+    x2={w * 0.96}
+    y2={h * 0.5}
+    stroke="#fff"
+    strokeWidth="3"
+  />
 
-              <circle
-                cx={w * 0.5}
-                cy={h * 0.5}
-                r={w * 0.1}
-                fill="none"
-                stroke="#fff"
-                strokeWidth="3"
-              />
+  {/* Center circle */}
+  <circle
+    cx={w * 0.5}
+    cy={h * 0.5}
+    r={w * 0.1}
+    fill="none"
+    stroke="#fff"
+    strokeWidth="3"
+  />
 
-              {lines.map((l, i) => (
-                <line
-                  key={i}
-                  x1={l.x1}
-                  y1={l.y1}
-                  x2={l.x2}
-                  y2={l.y2}
-                  stroke="#fde047"
-                  strokeWidth="5"
-                  markerEnd="url(#arrow)"
-                />
-              ))}
+  {/* ================= TOP GOAL AREA ================= */}
 
-              {drawing && (
-                <line
-                  x1={drawing.x1}
-                  y1={drawing.y1}
-                  x2={drawing.x2}
-                  y2={drawing.y2}
-                  stroke="#fde047"
-                  strokeWidth="5"
-                  strokeDasharray="8 5"
-                />
-              )}
-            </svg>
+  {/* Penalty box */}
+  <rect
+    x={w * 0.08}
+    y={h * 0.04}
+    width={w * 0.84}
+    height={h * 0.16}
+    fill="none"
+    stroke="#fff"
+    strokeWidth="3"
+  />
+
+  {/* 6-yard box */}
+  <rect
+    x={w * 0.28}
+    y={h * 0.04}
+    width={w * 0.44}
+    height={h * 0.08}
+    fill="none"
+    stroke="#fff"
+    strokeWidth="3"
+  />
+
+  {/* ================= BOTTOM GOAL AREA ================= */}
+
+  {/* Penalty box */}
+  <rect
+    x={w * 0.08}
+    y={h * 0.80}
+    width={w * 0.84}
+    height={h * 0.16}
+    fill="none"
+    stroke="#fff"
+    strokeWidth="3"
+  />
+
+  {/* 6-yard box */}
+  <rect
+    x={w * 0.28}
+    y={h * 0.88}
+    width={w * 0.44}
+    height={h * 0.08}
+    fill="none"
+    stroke="#fff"
+    strokeWidth="3"
+  />
+
+  {/* Tactical lines */}
+  {lines.map((l, i) => (
+    <line
+      key={i}
+      x1={l.x1}
+      y1={l.y1}
+      x2={l.x2}
+      y2={l.y2}
+      stroke="#fde047"
+      strokeWidth="5"
+      markerEnd="url(#arrow)"
+    />
+  ))}
+
+  {drawing && (
+    <line
+      x1={drawing.x1}
+      y1={drawing.y1}
+      x2={drawing.x2}
+      y2={drawing.y2}
+      stroke="#fde047"
+      strokeWidth="5"
+      strokeDasharray="8 5"
+    />
+  )}
+</svg>
 
             {/* MAIN PLAYERS */}
             {players.map((pos) => (
