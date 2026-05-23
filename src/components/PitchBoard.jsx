@@ -254,12 +254,6 @@ export default function TacticalBoard() {
 
              {/* Outer boundary with corner flags */}
              <rect x={w * 0.04} y={h * 0.04} width={w * 0.92} height={h * 0.92} fill="none" stroke="#f8fafc" strokeWidth="4" />
-             
-             {/* Corner arcs */}
-             <circle cx={w * 0.04} cy={h * 0.04} r={w * 0.03} fill="none" stroke="#f8fafc" strokeWidth="3" />
-             <circle cx={w * 0.96} cy={h * 0.04} r={w * 0.03} fill="none" stroke="#f8fafc" strokeWidth="3" />
-             <circle cx={w * 0.04} cy={h * 0.96} r={w * 0.03} fill="none" stroke="#f8fafc" strokeWidth="3" />
-             <circle cx={w * 0.96} cy={h * 0.96} r={w * 0.03} fill="none" stroke="#f8fafc" strokeWidth="3" />
 
              {/* Halfway line */}
              <line x1={w * 0.04} y1={h * 0.5} x2={w * 0.96} y2={h * 0.5} stroke="#f8fafc" strokeWidth="3" />
@@ -274,15 +268,6 @@ export default function TacticalBoard() {
              {/* Goal Area (6 yards / smaller box) */}
              <rect x={w * 0.26} y={h * 0.06} width={w * 0.48} height={h * 0.08} fill="none" stroke="#f8fafc" strokeWidth="3" />
              
-             {/* TOP GOAL - Simple net style */}
-             {/* Left post */}
-             <rect x={w * 0.038} y={h * 0.015} width="4" height={h * 0.055} fill="#f8fafc" />
-             {/* Right post */}
-             <rect x={w * 0.958} y={h * 0.015} width="4" height={h * 0.055} fill="#f8fafc" />
-             {/* Crossbar */}
-             <line x1={w * 0.042} y1={h * 0.015} x2={w * 0.958} y2={h * 0.015} stroke="#f8fafc" strokeWidth="3" />
-             {/* Goal line */}
-             <line x1={w * 0.042} y1={h * 0.07} x2={w * 0.958} y2={h * 0.07} stroke="#f8fafc" strokeWidth="3" />
 
              {/* BOTTOM GOAL AREA - Clean simple boxes */}
              {/* Penalty Area (18 yards / larger box) */}
@@ -290,16 +275,6 @@ export default function TacticalBoard() {
              {/* Goal Area (6 yards / smaller box) */}
              <rect x={w * 0.26} y={h * 0.86} width={w * 0.48} height={h * 0.08} fill="none" stroke="#f8fafc" strokeWidth="3" />
              
-             {/* BOTTOM GOAL - Simple net style */}
-             {/* Left post */}
-             <rect x={w * 0.038} y={h * 0.93} width="4" height={h * 0.055} fill="#f8fafc" />
-             {/* Right post */}
-             <rect x={w * 0.958} y={h * 0.93} width="4" height={h * 0.055} fill="#f8fafc" />
-             {/* Crossbar */}
-             <line x1={w * 0.042} y1={h * 0.93} x2={w * 0.958} y2={h * 0.93} stroke="#f8fafc" strokeWidth="3" />
-             {/* Goal line */}
-             <line x1={w * 0.042} y1={h * 0.985} x2={w * 0.958} y2={h * 0.985} stroke="#f8fafc" strokeWidth="3" />
-
              {/* Drawn tactical lines */}
              {lines.map((l, i) => (
                <line key={i} x1={l.x1} y1={l.y1} x2={l.x2} y2={l.y2} stroke="#fde047" strokeWidth="4.5" strokeLinecap="round" strokeLinejoin="round" markerEnd="url(#arrow)" />
