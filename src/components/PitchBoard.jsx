@@ -2,9 +2,23 @@ import { useState, useRef, useEffect, useCallback } from "react";
 import Draggable from "react-draggable";
 
 const squad = [
-  "John", "Lucas", "Alex", "Ronan", "Ruairi", "Jules", "Robbie",
-  "Fionn", "Josh", "Sam", "Mason", "Marcel", "Alan", "Darragh",
-  "Sonny", "Charlie", "Cian"
+  "John",
+  "Lucas",
+  "Alex",
+  "Ronan",
+  "Ruairi",
+  "Jules",
+  "Robbie",
+  "Fionn",
+  "Josh",
+  "Sam",
+  "Mason",
+  "Marcel",
+  "Alan",
+  "Darragh",
+  "Sonny",
+  "Charlie",
+  "Cian",
 ];
 
 const oppositionLabels = ["GK", "LB", "RB", "CM", "LW", "RW", "ST"];
@@ -30,15 +44,13 @@ const JerseyIcon = ({
       strokeWidth="4"
     />
 
-    {striped && (
+    {striped ? (
       <>
         <rect x="20" y="4" width="5" height="52" fill="#111" />
         <rect x="30" y="4" width="5" height="52" fill="#111" />
         <rect x="40" y="4" width="5" height="52" fill="#111" />
       </>
-    )}
-
-    {!striped && (
+    ) : (
       <>
         <rect x="22" y="4" width="6" height="52" fill="#111" />
         <rect x="36" y="4" width="6" height="52" fill="#111" />
@@ -49,23 +61,23 @@ const JerseyIcon = ({
 
 const formations = {
   "2-3-1": [
-    { id: "GK", label: "Goalkeeper", xPct: 0.50, yPct: 0.92 },
-    { id: "DEF1", label: "Defender 1", xPct: 0.27, yPct: 0.70 },
-    { id: "DEF2", label: "Defender 2", xPct: 0.73, yPct: 0.70 },
-    { id: "CM", label: "Central Mid", xPct: 0.50, yPct: 0.50 },
+    { id: "GK", label: "Goalkeeper", xPct: 0.5, yPct: 0.92 },
+    { id: "DEF1", label: "Defender 1", xPct: 0.27, yPct: 0.7 },
+    { id: "DEF2", label: "Defender 2", xPct: 0.73, yPct: 0.7 },
+    { id: "CM", label: "Central Mid", xPct: 0.5, yPct: 0.5 },
     { id: "WM1", label: "Wide Mid 1", xPct: 0.14, yPct: 0.35 },
     { id: "WM2", label: "Wide Mid 2", xPct: 0.86, yPct: 0.35 },
-    { id: "STR", label: "Striker", xPct: 0.50, yPct: 0.12 },
+    { id: "STR", label: "Striker", xPct: 0.5, yPct: 0.12 },
   ],
 
   "3-2-1": [
-    { id: "GK", label: "Goalkeeper", xPct: 0.50, yPct: 0.92 },
-    { id: "DEF1", label: "Left Defender", xPct: 0.20, yPct: 0.70 },
-    { id: "DEF2", label: "Center Defender", xPct: 0.50, yPct: 0.74 },
-    { id: "DEF3", label: "Right Defender", xPct: 0.80, yPct: 0.70 },
+    { id: "GK", label: "Goalkeeper", xPct: 0.5, yPct: 0.92 },
+    { id: "DEF1", label: "Left Defender", xPct: 0.2, yPct: 0.7 },
+    { id: "DEF2", label: "Center Defender", xPct: 0.5, yPct: 0.74 },
+    { id: "DEF3", label: "Right Defender", xPct: 0.8, yPct: 0.7 },
     { id: "MID1", label: "Midfielder 1", xPct: 0.35, yPct: 0.45 },
     { id: "MID2", label: "Midfielder 2", xPct: 0.65, yPct: 0.45 },
-    { id: "STR", label: "Striker", xPct: 0.50, yPct: 0.18 },
+    { id: "STR", label: "Striker", xPct: 0.5, yPct: 0.18 },
   ],
 };
 
@@ -101,9 +113,9 @@ export default function TacticalBoard() {
     const container = wrapperRef.current;
 
     const aw = container.clientWidth;
-    const ah = container.clientHeight;
 
     const w = aw * 0.98;
+
     const h = w * 1.6;
 
     setDims({ w, h });
@@ -133,7 +145,9 @@ export default function TacticalBoard() {
 
     const ro = new ResizeObserver(measure);
 
-    if (wrapperRef.current) ro.observe(wrapperRef.current);
+    if (wrapperRef.current) {
+      ro.observe(wrapperRef.current);
+    }
 
     return () => ro.disconnect();
   }, [measure]);
@@ -158,7 +172,12 @@ export default function TacticalBoard() {
 
     const { x, y } = getCoords(e);
 
-    setDrawing({ x1: x, y1: y, x2: x, y2: y });
+    setDrawing({
+      x1: x,
+      y1: y,
+      x2: x,
+      y2: y,
+    });
   };
 
   const onDrawMove = (e) => {
@@ -168,7 +187,11 @@ export default function TacticalBoard() {
 
     const { x, y } = getCoords(e);
 
-    setDrawing((d) => ({ ...d, x2: x, y2: y }));
+    setDrawing((d) => ({
+      ...d,
+      x2: x,
+      y2: y,
+    }));
   };
 
   const onDrawEnd = () => {
@@ -186,6 +209,12 @@ export default function TacticalBoard() {
 
   const dragStartRef = useRef({});
   const didDragRef = useRef({});
+
+  const jerseySize = Math.max(120, Math.min(170, dims.w * 0.32));
+
+  const fontSize = Math.max(24, Math.min(34, dims.w * 0.075));
+
+  const tokenWidth = jerseySize + 40;
 
   const onPlayerPointerDown = (posId, e) => {
     const src = e.touches ? e.touches[0] : e;
@@ -211,11 +240,11 @@ export default function TacticalBoard() {
         src.clientY - start.y
       );
 
-      if (moved > 8) didDragRef.current[posId] = true;
+      if (moved > 8) {
+        didDragRef.current[posId] = true;
+      }
     }
   };
-
-  const jerseySize = Math.max(90, Math.min(145, dims.w * 0.29));
 
   const onDragStop = (posId, _, data) => {
     const wasDrag = didDragRef.current[posId];
@@ -280,10 +309,6 @@ export default function TacticalBoard() {
 
   const { w, h } = dims;
 
-  const fontSize = Math.max(16, Math.min(24, w * 0.062));
-
-  const tokenWidth = jerseySize + 40;
-
   return (
     <div
       style={{
@@ -296,11 +321,11 @@ export default function TacticalBoard() {
         flexDirection: "column",
       }}
     >
-      {/* Header */}
+      {/* HEADER */}
       <div
         style={{
-          height: "120px",
-          padding: "16px 20px",
+          height: "150px",
+          padding: "20px 24px",
           background:
             "linear-gradient(135deg, #1e2937 0%, #0f172a 100%)",
           borderBottom: "2px solid #334155",
@@ -315,7 +340,7 @@ export default function TacticalBoard() {
           <div
             style={{
               color: "#f1f5f9",
-              fontSize: "36px",
+              fontSize: "42px",
               fontWeight: "950",
             }}
           >
@@ -325,25 +350,39 @@ export default function TacticalBoard() {
           <div
             style={{
               color: "#cbd5e1",
-              fontSize: "14px",
-              marginTop: "4px",
+              fontSize: "18px",
+              marginTop: "6px",
+              fontWeight: "600",
             }}
           >
             7-a-side • Academy Planner
           </div>
         </div>
 
-        <div style={{ display: "flex", gap: "10px", flexWrap: "wrap" }}>
+        <div
+          style={{
+            display: "flex",
+            gap: "16px",
+            flexWrap: "wrap",
+            alignItems: "center",
+            justifyContent: "flex-end",
+          }}
+        >
           <select
             value={formationKey}
             onChange={(e) => setFormationKey(e.target.value)}
             style={{
-              padding: "12px",
-              borderRadius: "10px",
+              padding: "18px 24px",
+              borderRadius: "18px",
               background: "#334155",
               color: "white",
-              border: "none",
-              fontWeight: "700",
+              border: "2px solid #475569",
+              fontWeight: "800",
+              fontSize: "22px",
+              minHeight: "68px",
+              minWidth: "170px",
+              appearance: "none",
+              WebkitAppearance: "none",
             }}
           >
             {Object.keys(formations).map((f) => (
@@ -354,13 +393,17 @@ export default function TacticalBoard() {
           <button
             onClick={() => setShowOpposition((o) => !o)}
             style={{
-              padding: "12px 18px",
-              borderRadius: "12px",
+              padding: "18px 26px",
+              borderRadius: "18px",
               background: showOpposition ? "#7c3aed" : "#334155",
               color: "#fff",
               border: "none",
-              fontWeight: "700",
+              fontWeight: "800",
+              fontSize: "22px",
+              minHeight: "68px",
+              minWidth: "240px",
               cursor: "pointer",
+              boxShadow: "0 6px 16px rgba(0,0,0,0.25)",
             }}
           >
             {showOpposition
@@ -371,13 +414,17 @@ export default function TacticalBoard() {
           <button
             onClick={() => setLines((l) => l.slice(0, -1))}
             style={{
-              padding: "12px 18px",
-              borderRadius: "12px",
+              padding: "18px 26px",
+              borderRadius: "18px",
               background: "#334155",
               color: "#fff",
               border: "none",
-              fontWeight: "700",
+              fontWeight: "800",
+              fontSize: "22px",
+              minHeight: "68px",
+              minWidth: "140px",
               cursor: "pointer",
+              boxShadow: "0 6px 16px rgba(0,0,0,0.25)",
             }}
           >
             Undo
@@ -386,13 +433,17 @@ export default function TacticalBoard() {
           <button
             onClick={resetFormation}
             style={{
-              padding: "12px 18px",
-              borderRadius: "12px",
-              background: "#b91c1c",
+              padding: "18px 26px",
+              borderRadius: "18px",
+              background: "#dc2626",
               color: "#fff",
               border: "none",
-              fontWeight: "700",
+              fontWeight: "800",
+              fontSize: "22px",
+              minHeight: "68px",
+              minWidth: "150px",
               cursor: "pointer",
+              boxShadow: "0 6px 16px rgba(0,0,0,0.25)",
             }}
           >
             Reset
@@ -400,7 +451,7 @@ export default function TacticalBoard() {
         </div>
       </div>
 
-      {/* Pitch */}
+      {/* PITCH */}
       <div
         ref={wrapperRef}
         style={{
@@ -418,10 +469,10 @@ export default function TacticalBoard() {
             style={{
               width: `${w}px`,
               height: `${h}px`,
-              borderRadius: "16px",
+              borderRadius: "20px",
               overflow: "hidden",
               position: "relative",
-              border: "3px solid #e2e8f0",
+              border: "4px solid #e2e8f0",
               background: "#1a3a1a",
               touchAction: "none",
             }}
@@ -447,7 +498,7 @@ export default function TacticalBoard() {
               />
             ))}
 
-            {/* Pitch SVG */}
+            {/* PITCH MARKINGS */}
             <svg
               width={w}
               height={h}
@@ -503,7 +554,7 @@ export default function TacticalBoard() {
                   x2={l.x2}
                   y2={l.y2}
                   stroke="#fde047"
-                  strokeWidth="4.5"
+                  strokeWidth="5"
                   markerEnd="url(#arrow)"
                 />
               ))}
@@ -515,13 +566,13 @@ export default function TacticalBoard() {
                   x2={drawing.x2}
                   y2={drawing.y2}
                   stroke="#fde047"
-                  strokeWidth="4.5"
-                  strokeDasharray="6 4"
+                  strokeWidth="5"
+                  strokeDasharray="8 5"
                 />
               )}
             </svg>
 
-            {/* Main Players */}
+            {/* MAIN PLAYERS */}
             {players.map((pos) => (
               <Draggable
                 key={pos.id}
@@ -560,8 +611,9 @@ export default function TacticalBoard() {
                   <div
                     style={{
                       color: "#fff",
-                      fontWeight: "700",
+                      fontWeight: "800",
                       fontSize: `${fontSize}px`,
+                      marginTop: "8px",
                     }}
                   >
                     {assigned[pos.id] ||
@@ -571,7 +623,7 @@ export default function TacticalBoard() {
               </Draggable>
             ))}
 
-            {/* Opposition Players */}
+            {/* OPPOSITION */}
             {showOpposition &&
               oppositionPlayers.map((pos, index) => (
                 <Draggable
@@ -605,8 +657,9 @@ export default function TacticalBoard() {
                     <div
                       style={{
                         color: "#fff",
-                        fontWeight: "700",
+                        fontWeight: "800",
                         fontSize: `${fontSize}px`,
+                        marginTop: "8px",
                       }}
                     >
                       {oppositionLabels[index] || "Opp"}
@@ -618,28 +671,31 @@ export default function TacticalBoard() {
         )}
       </div>
 
-      {/* Opposition opacity control */}
+      {/* OPACITY PANEL */}
       {showOpposition && (
         <div
           style={{
             position: "fixed",
-            bottom: "20px",
-            right: "20px",
+            bottom: "24px",
+            right: "24px",
             background: "#1e2937",
-            padding: "16px",
-            borderRadius: "16px",
-            border: "1px solid #334155",
+            padding: "22px",
+            borderRadius: "22px",
+            border: "2px solid #334155",
             zIndex: 500,
+            width: "320px",
+            boxShadow: "0 12px 30px rgba(0,0,0,0.4)",
           }}
         >
           <div
             style={{
               color: "#f1f5f9",
-              marginBottom: "10px",
-              fontWeight: "700",
+              marginBottom: "18px",
+              fontWeight: "800",
+              fontSize: "22px",
             }}
           >
-            Opposition Opacity
+            Opposition Visibility
           </div>
 
           <input
@@ -651,11 +707,27 @@ export default function TacticalBoard() {
             onChange={(e) =>
               setOppositionOpacity(Number(e.target.value))
             }
+            style={{
+              width: "100%",
+              height: "42px",
+            }}
           />
+
+          <div
+            style={{
+              color: "#cbd5e1",
+              marginTop: "14px",
+              fontSize: "18px",
+              textAlign: "center",
+              fontWeight: "700",
+            }}
+          >
+            {Math.round(oppositionOpacity * 100)}%
+          </div>
         </div>
       )}
 
-      {/* Bottom Sheet */}
+      {/* PLAYER SHEET */}
       {sheetOpen && (
         <>
           <div
@@ -675,20 +747,20 @@ export default function TacticalBoard() {
               left: 0,
               right: 0,
               background: "#1e2937",
-              borderTopLeftRadius: "24px",
-              borderTopRightRadius: "24px",
+              borderTopLeftRadius: "32px",
+              borderTopRightRadius: "32px",
               maxHeight: "85vh",
               overflowY: "auto",
               zIndex: 210,
-              padding: "24px",
+              padding: "28px",
             }}
           >
             <div
               style={{
                 color: "#fff",
-                fontSize: "28px",
+                fontSize: "36px",
                 fontWeight: "900",
-                marginBottom: "24px",
+                marginBottom: "28px",
               }}
             >
               Select Player
@@ -698,8 +770,8 @@ export default function TacticalBoard() {
               style={{
                 display: "grid",
                 gridTemplateColumns:
-                  "repeat(auto-fill, minmax(165px, 1fr))",
-                gap: "16px",
+                  "repeat(auto-fill, minmax(220px, 1fr))",
+                gap: "18px",
               }}
             >
               {squad.map((player, idx) => {
@@ -710,10 +782,12 @@ export default function TacticalBoard() {
                   <button
                     key={idx}
                     onClick={() => {
-                      if (!isAssigned) assignPlayer(player);
+                      if (!isAssigned) {
+                        assignPlayer(player);
+                      }
                     }}
                     style={{
-                      padding: "22px 16px",
+                      padding: "34px 20px",
                       background: isAssigned
                         ? "#1f2937"
                         : "#334155",
@@ -721,9 +795,9 @@ export default function TacticalBoard() {
                         ? "#64748b"
                         : "#f1f5f9",
                       border: "2px solid #475569",
-                      borderRadius: "14px",
-                      fontWeight: "700",
-                      fontSize: "18px",
+                      borderRadius: "22px",
+                      fontWeight: "800",
+                      fontSize: "26px",
                       cursor: isAssigned
                         ? "not-allowed"
                         : "pointer",
@@ -738,6 +812,58 @@ export default function TacticalBoard() {
           </div>
         </>
       )}
+
+      {/* GLOBAL STYLES */}
+      <style>{`
+        * {
+          box-sizing: border-box;
+        }
+
+        body {
+          margin: 0;
+          padding: 0;
+          font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        }
+
+        button,
+        select,
+        input[type="range"] {
+          transition: all 0.18s ease;
+        }
+
+        button:active {
+          transform: scale(0.96);
+        }
+
+        button,
+        select,
+        .player-token {
+          touch-action: manipulation;
+        }
+
+        input[type="range"] {
+          -webkit-appearance: none;
+          appearance: none;
+          background: transparent;
+        }
+
+        input[type="range"]::-webkit-slider-runnable-track {
+          height: 12px;
+          background: #475569;
+          border-radius: 999px;
+        }
+
+        input[type="range"]::-webkit-slider-thumb {
+          -webkit-appearance: none;
+          appearance: none;
+          width: 34px;
+          height: 34px;
+          border-radius: 50%;
+          background: #ffffff;
+          margin-top: -11px;
+          cursor: pointer;
+        }
+      `}</style>
     </div>
   );
 }
