@@ -273,12 +273,32 @@ export default function TacticalBoard() {
              <rect x={w * 0.08} y={h * 0.03} width={w * 0.84} height={h * 0.14} fill="none" stroke="#f8fafc" strokeWidth="3" />
              {/* Goal Area (6 yards / smaller box) */}
              <rect x={w * 0.26} y={h * 0.06} width={w * 0.48} height={h * 0.08} fill="none" stroke="#f8fafc" strokeWidth="3" />
+             
+             {/* TOP GOAL POSTS AND NET */}
+             {/* Left post */}
+             <rect x={w * 0.04 - 2} y={h * 0.02} width="4" height={h * 0.04} fill="#f8fafc" />
+             {/* Right post */}
+             <rect x={w * 0.96} y={h * 0.02} width="4" height={h * 0.04} fill="#f8fafc" />
+             {/* Crossbar */}
+             <line x1={w * 0.04} y1={h * 0.02} x2={w * 0.96} y2={h * 0.02} stroke="#f8fafc" strokeWidth="3" />
+             {/* Goal line */}
+             <line x1={w * 0.04} y1={h * 0.06} x2={w * 0.96} y2={h * 0.06} stroke="#f8fafc" strokeWidth="3" />
 
              {/* BOTTOM GOAL AREA - Clean simple boxes */}
              {/* Penalty Area (18 yards / larger box) */}
              <rect x={w * 0.08} y={h * 0.83} width={w * 0.84} height={h * 0.14} fill="none" stroke="#f8fafc" strokeWidth="3" />
              {/* Goal Area (6 yards / smaller box) */}
              <rect x={w * 0.26} y={h * 0.86} width={w * 0.48} height={h * 0.08} fill="none" stroke="#f8fafc" strokeWidth="3" />
+             
+             {/* BOTTOM GOAL POSTS AND NET */}
+             {/* Left post */}
+             <rect x={w * 0.04 - 2} y={h * 0.94} width="4" height={h * 0.04} fill="#f8fafc" />
+             {/* Right post */}
+             <rect x={w * 0.96} y={h * 0.94} width="4" height={h * 0.04} fill="#f8fafc" />
+             {/* Crossbar */}
+             <line x1={w * 0.04} y1={h * 0.94} x2={w * 0.96} y2={h * 0.94} stroke="#f8fafc" strokeWidth="3" />
+             {/* Goal line */}
+             <line x1={w * 0.04} y1={h * 0.98} x2={w * 0.96} y2={h * 0.98} stroke="#f8fafc" strokeWidth="3" />
 
              {/* Drawn tactical lines */}
              {lines.map((l, i) => (
@@ -375,17 +395,17 @@ export default function TacticalBoard() {
 
        {/* Sheet content */}
        <div style={{ padding: "0 20px 32px" }}>
-         <div style={{ marginBottom: "20px" }}>
-           <div style={{ color: "#f1f5f9", fontSize: "22px", fontWeight: "900", marginBottom: "6px" }}>
+         <div style={{ marginBottom: "24px" }}>
+           <div style={{ color: "#f1f5f9", fontSize: "26px", fontWeight: "900", marginBottom: "8px" }}>
              {selectedPos && FORMATION.find(f => f.id === selectedPos)?.label}
            </div>
-           <div style={{ color: "#94a3b8", fontSize: "14px", fontWeight: "500" }}>
+           <div style={{ color: "#94a3b8", fontSize: "16px", fontWeight: "500" }}>
              Pick a player from your squad
            </div>
          </div>
 
          {/* Player grid - larger buttons */}
-         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(120px, 1fr))", gap: "12px", marginBottom: "20px" }}>
+         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(140px, 1fr))", gap: "14px", marginBottom: "24px" }}>
            {squad.map((player, idx) => {
              const isAssigned = Object.values(assigned).includes(player);
              return (
@@ -395,13 +415,13 @@ export default function TacticalBoard() {
                    if (!isAssigned) assignPlayer(player);
                  }}
                  style={{
-                   padding: "16px 12px",
+                   padding: "18px 14px",
                    background: isAssigned ? "#1f2937" : assigned[selectedPos] === player ? "#fde047" : "#334155",
                    color: assigned[selectedPos] === player ? "#111" : isAssigned ? "#64748b" : "#f1f5f9",
                    border: "2.5px solid " + (assigned[selectedPos] === player ? "#fde047" : "#475569"),
                    borderRadius: "12px",
                    fontWeight: "700",
-                   fontSize: "15px",
+                   fontSize: "16px",
                    cursor: isAssigned ? "not-allowed" : "pointer",
                    transition: "all 0.25s ease",
                    opacity: isAssigned ? 0.5 : 1,
