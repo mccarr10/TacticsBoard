@@ -7,34 +7,31 @@ const squad = [
   "Sonny","Charlie","Cian"
 ];
 
-const JerseyIcon = ({ size = 35, color = "white" }) => (
-  <svg width={size} height={size} viewBox="0 0 64 64" fill="none">
-    <path
-      d="M16 8 L24 4 L40 4 L48 8 L56 20 L48 28 L48 56 L16 56 L16 28 L8 20 Z"
-      fill={color}
-      stroke="#111"
-      strokeWidth="4"
-    />
-  </svg>
-);
+const oppositionLabels = ["GK","LB","RB","CM","LW","RW","ST"];
 
-const FORMATION = [
-  { id: "GK", label: "Goalkeeper", xPct: 0.5, yPct: 0.92 },
-  { id: "DEF1", label: "Defender 1", xPct: 0.27, yPct: 0.7 },
-  { id: "DEF2", label: "Defender 2", xPct: 0.73, yPct: 0.7 },
-  { id: "CM", label: "Central Mid", xPct: 0.5, yPct: 0.5 },
-  { id: "WM1", label: "Wide Mid 1", xPct: 0.14, yPct: 0.35 },
-  { id: "WM2", label: "Wide Mid 2", xPct: 0.86, yPct: 0.35 },
-  { id: "STR", label: "Striker", xPct: 0.5, yPct: 0.12 },
-];
+const formations = {
+  "2-3-1": [
+    { id: "GK", label: "Goalkeeper", xPct: 0.5, yPct: 0.92 },
+    { id: "DEF1", label: "Defender 1", xPct: 0.27, yPct: 0.7 },
+    { id: "DEF2", label: "Defender 2", xPct: 0.73, yPct: 0.7 },
+    { id: "CM", label: "Central Mid", xPct: 0.5, yPct: 0.5 },
+    { id: "WM1", label: "Wide Mid 1", xPct: 0.14, yPct: 0.35 },
+    { id: "WM2", label: "Wide Mid 2", xPct: 0.86, yPct: 0.35 },
+    { id: "STR", label: "Striker", xPct: 0.5, yPct: 0.12 },
+  ],
+};
 
 export default function TacticalBoard() {
   const pitchRef = useRef(null);
   const wrapperRef = useRef(null);
 
   const [dims, setDims] = useState({ w: 0, h: 0 });
+  const [formationKey] = useState("2-3-1");
+  const FORMATION = formations[formationKey];
+
   const [players, setPlayers] = useState([]);
   const [oppositionPlayers, setOppositionPlayers] = useState([]);
+
   const [assigned, setAssigned] = useState({});
   const [selectedPos, setSelectedPos] = useState(null);
   const [sheetOpen, setSheetOpen] = useState(false);
@@ -43,6 +40,9 @@ export default function TacticalBoard() {
   const [drawing, setDrawing] = useState(null);
 
   const [showOpposition, setShowOpposition] = useState(true);
+  const [oppositionOpacity, setOppositionOpacity] = useState(0.85);
+
+  const [ready, setReady] = useState(false);
 
   const measure = useCallback(() => {
     if (!wrapperRef.current) return;
@@ -68,6 +68,8 @@ export default function TacticalBoard() {
         y: (1 - p.yPct) * h
       }))
     );
+
+    setReady(true);
   }, []);
 
   useEffect(() => {
@@ -80,14 +82,12 @@ export default function TacticalBoard() {
   const getCoords = (e) => {
     const rect = pitchRef.current.getBoundingClientRect();
     const src = e.touches ? e.touches[0] : e;
-
     return {
       x: src.clientX - rect.left,
-      y: src.clientY - rect.top
+      y: src.clientY - rect.top,
     };
   };
 
-  // DRAW ARROWS
   const onDrawStart = (e) => {
     if (e.target.closest(".player-token")) return;
     const { x, y } = getCoords(e);
@@ -102,116 +102,83 @@ export default function TacticalBoard() {
 
   const onDrawEnd = () => {
     if (!drawing) return;
-
     const dx = drawing.x2 - drawing.x1;
     const dy = drawing.y2 - drawing.y1;
 
     if (Math.hypot(dx, dy) > 20) {
       setLines(l => [...l, drawing]);
     }
-
     setDrawing(null);
   };
 
-  // NEW: CLEAR ARROWS ONLY
   const clearArrows = () => {
     setLines([]);
   };
 
-  // FIXED RESET: does NOT touch names or arrows
   const resetPositionsOnly = () => {
-    measure();
+    measure(); // ONLY resets positions, NOT names or arrows
   };
 
-  const jerseySize = Math.max(100, Math.min(150, dims.w * 0.3));
-  const fontSize = Math.max(16, Math.min(22, dims.w * 0.06));
+const jerseySize = Math.max(70, Math.min(110, dims.w * 0.20));
+const fontSize = Math.max(16, Math.min(24, dims.w * 0.045));
+const tokenWidth = jerseySize + 20;
 
   return (
-    <div style={{
-      width: "100vw",
-      height: "100dvh",
-      background: "#020617",
-      display: "flex",
-      flexDirection: "column"
-    }}>
+    <div style={{ width: "100vw", height: "100dvh", background: "#020617", display: "flex", flexDirection: "column" }}>
 
       {/* HEADER */}
       <div style={{
-        height: "110px",
-        padding: "16px",
+        height: "150px",
+        padding: "20px",
+        background: "linear-gradient(135deg,#1e2937,#0f172a)",
         display: "flex",
         justifyContent: "space-between",
-        alignItems: "center",
-        background: "linear-gradient(135deg,#1e2937,#0f172a)"
+        alignItems: "center"
       }}>
-        <div style={{ color: "#fff", fontSize: "32px", fontWeight: "900" }}>
-          Tactical Board
+        <div>
+          <div style={{ fontSize: "42px", fontWeight: "900", color: "#fff" }}>
+            Tactical Board
+          </div>
         </div>
 
-        <div style={{ display: "flex", gap: "12px" }}>
+        <div style={{ display: "flex", gap: "12px", flexWrap: "wrap" }}>
 
           <button
             onClick={() => setShowOpposition(v => !v)}
-            style={{
-              padding: "14px 18px",
-              borderRadius: "12px",
-              background: "#7c3aed",
-              color: "#fff",
-              fontSize: "18px",
-              fontWeight: "800"
-            }}
+            style={{ padding: "18px 22px", fontSize: "20px", borderRadius: "14px", background: "#7c3aed", color: "#fff" }}
           >
-            Opp
+            {showOpposition ? "Hide Opp" : "Show Opp"}
           </button>
 
-          {/* NEW BUTTON */}
           <button
             onClick={clearArrows}
-            style={{
-              padding: "14px 18px",
-              borderRadius: "12px",
-              background: "#334155",
-              color: "#fff",
-              fontSize: "18px",
-              fontWeight: "800"
-            }}
+            style={{ padding: "18px 22px", fontSize: "20px", borderRadius: "14px", background: "#334155", color: "#fff" }}
           >
             Clear Arrows
           </button>
 
           <button
             onClick={resetPositionsOnly}
-            style={{
-              padding: "14px 18px",
-              borderRadius: "12px",
-              background: "#dc2626",
-              color: "#fff",
-              fontSize: "18px",
-              fontWeight: "800"
-            }}
+            style={{ padding: "18px 22px", fontSize: "20px", borderRadius: "14px", background: "#dc2626", color: "#fff" }}
           >
-            Reset
+            Reset Positions
           </button>
         </div>
       </div>
 
       {/* PITCH */}
-      <div ref={wrapperRef} style={{
-        flex: 1,
-        display: "flex",
-        justifyContent: "center",
-        alignItems: "center"
-      }}>
-        {dims.w > 0 && (
+      <div ref={wrapperRef} style={{ flex: 1, display: "flex", justifyContent: "center", alignItems: "center" }}>
+        {ready && (
           <div
             ref={pitchRef}
             style={{
               width: dims.w,
               height: dims.h,
-              background: "#166534",
               position: "relative",
-              borderRadius: "16px",
-              overflow: "hidden"
+              background: "#166534",
+              borderRadius: "20px",
+              overflow: "hidden",
+              touchAction: "none"
             }}
             onMouseDown={onDrawStart}
             onMouseMove={onDrawMove}
@@ -219,51 +186,34 @@ export default function TacticalBoard() {
             onMouseLeave={onDrawEnd}
           >
 
-            {/* ARROWS */}
+            {/* LINES */}
             {lines.map((l,i)=>(
               <svg key={i} style={{ position:"absolute", inset:0 }}>
                 <line
-                  x1={l.x1}
-                  y1={l.y1}
-                  x2={l.x2}
-                  y2={l.y2}
+                  x1={l.x1} y1={l.y1}
+                  x2={l.x2} y2={l.y2}
                   stroke="#fde047"
-                  strokeWidth="4"
+                  strokeWidth="5"
                 />
               </svg>
             ))}
 
-            {drawing && (
-              <svg style={{ position:"absolute", inset:0 }}>
-                <line
-                  x1={drawing.x1}
-                  y1={drawing.y1}
-                  x2={drawing.x2}
-                  y2={drawing.y2}
-                  stroke="#fde047"
-                  strokeWidth="4"
-                  strokeDasharray="6 4"
-                />
-              </svg>
-            )}
-
-            {/* PLAYERS */}
+            {/* MAIN PLAYERS */}
             {players.map(p => (
               <div
                 key={p.id}
-                className="player-token"
                 style={{
                   position:"absolute",
                   left:p.x,
                   top:p.y,
+                  width:tokenWidth,
                   textAlign:"center",
                   color:"#fff",
                   fontWeight:"800",
                   fontSize
                 }}
               >
-                <JerseyIcon size={jerseySize} color="#f8fafc" />
-                <div>{p.label.split(" ")[0]}</div>
+                🟡 {p.label.split(" ")[0]}
               </div>
             ))}
 
@@ -275,21 +225,45 @@ export default function TacticalBoard() {
                   position:"absolute",
                   left:p.x,
                   top:p.y,
+                  width:tokenWidth,
                   textAlign:"center",
                   color:"#fff",
+                  opacity:oppositionOpacity,
                   fontWeight:"800",
-                  fontSize,
-                  opacity:0.85
+                  fontSize
                 }}
               >
-                <JerseyIcon size={jerseySize} color="#ef4444" />
-                <div>Opp</div>
+                🔴 {oppositionLabels[0]}
               </div>
             ))}
 
           </div>
         )}
       </div>
+
+      {/* OPACITY SLIDER */}
+      {showOpposition && (
+        <div style={{
+          position:"fixed",
+          bottom:20,
+          right:20,
+          background:"#1e2937",
+          padding:20,
+          borderRadius:16,
+          color:"#fff"
+        }}>
+          <div>Opposition Opacity</div>
+          <input
+            type="range"
+            min="0.2"
+            max="1"
+            step="0.05"
+            value={oppositionOpacity}
+            onChange={e=>setOppositionOpacity(Number(e.target.value))}
+          />
+        </div>
+      )}
+
     </div>
   );
 }
