@@ -226,6 +226,7 @@ export default function TacticalBoard() {
   const tokenWidth = jerseySize + 12;
 
   const isMobile = dims.w < 700;
+  
 
   const onPlayerPointerDown = (posId, e) => {
     const src = e.touches ? e.touches[0] : e;
@@ -329,7 +330,7 @@ export default function TacticalBoard() {
         position: "fixed",
         inset: 0,
         display: "flex",
-        flexDirection: "column",
+        flexDirection: isMobile ? "column" : "row"
       }}
     >
       {/* HEADER */}
