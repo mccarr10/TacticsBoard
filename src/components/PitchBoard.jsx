@@ -107,50 +107,48 @@ export default function TacticalBoard() {
 
   const [oppositionOpacity, setOppositionOpacity] = useState(0.85);
 
-  const measure = useCallback(() => {
-    if (!wrapperRef.current) return;
+ const measure = useCallback(() => {
+  if (!wrapperRef.current) return;
 
-    const container = wrapperRef.current;
+  const container = wrapperRef.current;
 
-    const aw = container.clientWidth;
+  const availableWidth = container.clientWidth;
+  const availableHeight = container.clientHeight;
 
-    const w = aw * 0.98;
+  // 7-a-side pitch ratio
+  const aspectRatio = 1.6;
 
-    const h = w * 1.6;
+  // Fit inside BOTH width + height
+  let w = availableWidth * 0.95;
+  let h = w * aspectRatio;
 
-    setDims({ w, h });
+  // If too tall, resize based on height instead
+  if (h > availableHeight * 0.95) {
+    h = availableHeight * 0.95;
+    w = h / aspectRatio;
+  }
 
-    setPlayers(
-      FORMATION.map((p) => ({
-        ...p,
-        x: p.xPct * w,
-        y: p.yPct * h,
-      }))
-    );
+  setDims({ w, h });
 
-    const mirrored = FORMATION.map((p) => ({
+  setPlayers(
+    FORMATION.map((p) => ({
       ...p,
-      id: `OPP_${p.id}`,
-      x: (1 - p.xPct) * w,
-      y: (1 - p.yPct) * h,
-    }));
+      x: p.xPct * w,
+      y: p.yPct * h,
+    }))
+  );
 
-    setOppositionPlayers(mirrored);
+  const mirrored = FORMATION.map((p) => ({
+    ...p,
+    id: `OPP_${p.id}`,
+    x: (1 - p.xPct) * w,
+    y: (1 - p.yPct) * h,
+  }));
 
-    setReady(true);
-  }, [FORMATION]);
+  setOppositionPlayers(mirrored);
 
-  useEffect(() => {
-    measure();
-
-    const ro = new ResizeObserver(measure);
-
-    if (wrapperRef.current) {
-      ro.observe(wrapperRef.current);
-    }
-
-    return () => ro.disconnect();
-  }, [measure]);
+  setReady(true);
+}, [FORMATION]);
 
   const getCoords = (e) => {
     if (!pitchRef.current) return { x: 0, y: 0 };
@@ -210,11 +208,13 @@ export default function TacticalBoard() {
   const dragStartRef = useRef({});
   const didDragRef = useRef({});
 
-  const jerseySize = Math.max(120, Math.min(170, dims.w * 0.32));
+  const jerseySize = Math.max(44, Math.min(72, dims.w * 0.085));
 
-  const fontSize = Math.max(24, Math.min(34, dims.w * 0.075));
+  const fontSize = Math.max(10, Math.min(16, dims.w * 0.018));
 
-  const tokenWidth = jerseySize + 40;
+  const tokenWidth = jerseySize + 12;
+
+  const isMobile = dims.w < 700;
 
   const onPlayerPointerDown = (posId, e) => {
     const src = e.touches ? e.touches[0] : e;
@@ -324,7 +324,7 @@ export default function TacticalBoard() {
       {/* HEADER */}
       <div
         style={{
-          height: "150px",
+          height: isMobile ? "120px" : "88px",
           padding: "20px 24px",
           background:
             "linear-gradient(135deg, #1e2937 0%, #0f172a 100%)",
@@ -340,7 +340,7 @@ export default function TacticalBoard() {
           <div
             style={{
               color: "#f1f5f9",
-              fontSize: "42px",
+              fontSize: isMobile ? "30px" : "22px",
               fontWeight: "950",
             }}
           >
@@ -350,7 +350,7 @@ export default function TacticalBoard() {
           <div
             style={{
               color: "#cbd5e1",
-              fontSize: "18px",
+              fontSize: isMobile ? "16px" : "13px",
               marginTop: "6px",
               fontWeight: "600",
             }}
@@ -378,8 +378,8 @@ export default function TacticalBoard() {
               color: "white",
               border: "2px solid #475569",
               fontWeight: "800",
-              fontSize: "22px",
-              minHeight: "68px",
+              fontSize: isMobile ? "18px" : "14px",
+              minHeight: isMobile ? "58px" : "42px",
               minWidth: "170px",
               appearance: "none",
               WebkitAppearance: "none",
@@ -399,9 +399,9 @@ export default function TacticalBoard() {
               color: "#fff",
               border: "none",
               fontWeight: "800",
-              fontSize: "22px",
-              minHeight: "68px",
-              minWidth: "240px",
+              fontSize: isMobile ? "18px" : "14px",
+              minHeight: isMobile ? "58px" : "42px",
+              minWidth: isMobile ? "240px" : "160px",
               cursor: "pointer",
               boxShadow: "0 6px 16px rgba(0,0,0,0.25)",
             }}
@@ -420,8 +420,8 @@ export default function TacticalBoard() {
               color: "#fff",
               border: "none",
               fontWeight: "800",
-              fontSize: "22px",
-              minHeight: "68px",
+              fontSize: isMobile ? "18px" : "14px",
+              minHeight: isMobile ? "58px" : "42px",
               minWidth: "140px",
               cursor: "pointer",
               boxShadow: "0 6px 16px rgba(0,0,0,0.25)",
@@ -439,8 +439,8 @@ export default function TacticalBoard() {
               color: "#fff",
               border: "none",
               fontWeight: "800",
-              fontSize: "22px",
-              minHeight: "68px",
+              fontSize: isMobile ? "18px" : "14px",
+              minHeight: isMobile ? "58px" : "42px",
               minWidth: "150px",
               cursor: "pointer",
               boxShadow: "0 6px 16px rgba(0,0,0,0.25)",
@@ -744,7 +744,7 @@ export default function TacticalBoard() {
               color: "#f1f5f9",
               marginBottom: "18px",
               fontWeight: "800",
-              fontSize: "22px",
+              fontSize: isMobile ? "18px" : "14px",
             }}
           >
             Opposition Visibility
