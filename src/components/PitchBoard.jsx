@@ -7,7 +7,7 @@ const squad = [
   "Sonny","Charlie","Cian"
 ];
 
-const JerseyIcon = ({ size = 52, color = "white" }) => (
+const JerseyIcon = ({ size = 35, color = "white" }) => (
   <svg width={size} height={size} viewBox="0 0 64 64" fill="none">
     <path
       d="M16 8 L24 4 L40 4 L48 8 L56 20 L48 28 L48 56 L16 56 L16 28 L8 20 Z"
