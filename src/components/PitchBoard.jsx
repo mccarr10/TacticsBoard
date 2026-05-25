@@ -149,6 +149,17 @@ export default function TacticalBoard() {
 
   setReady(true);
 }, [FORMATION]);
+  useEffect(() => {
+  measure();
+
+  const ro = new ResizeObserver(measure);
+
+  if (wrapperRef.current) {
+    ro.observe(wrapperRef.current);
+  }
+
+  return () => ro.disconnect();
+}, [measure]);
 
   const getCoords = (e) => {
     if (!pitchRef.current) return { x: 0, y: 0 };
