@@ -400,65 +400,6 @@ export default function TacticalBoard() {
               <option key={f}>{f}</option>
             ))}
           </select>
-
-          <button
-            onClick={() => setShowOpposition((o) => !o)}
-            style={{
-              padding: "18px 26px",
-              borderRadius: "18px",
-              background: showOpposition ? "#7c3aed" : "#334155",
-              color: "#fff",
-              border: "none",
-              fontWeight: "800",
-              fontSize: isMobile ? "18px" : "14px",
-              minHeight: isMobile ? "58px" : "42px",
-              minWidth: isMobile ? "240px" : "160px",
-              cursor: "pointer",
-              boxShadow: "0 6px 16px rgba(0,0,0,0.25)",
-            }}
-          >
-            {showOpposition
-              ? "Hide Opposition"
-              : "Show Opposition"}
-          </button>
-
-          <button
-            onClick={() => setLines((l) => l.slice(0, -1))}
-            style={{
-              padding: "18px 26px",
-              borderRadius: "18px",
-              background: "#334155",
-              color: "#fff",
-              border: "none",
-              fontWeight: "800",
-              fontSize: isMobile ? "18px" : "14px",
-              minHeight: isMobile ? "58px" : "42px",
-              minWidth: "140px",
-              cursor: "pointer",
-              boxShadow: "0 6px 16px rgba(0,0,0,0.25)",
-            }}
-          >
-            Undo
-          </button>
-
-          <button
-            onClick={resetFormation}
-            style={{
-              padding: "18px 26px",
-              borderRadius: "18px",
-              background: "#dc2626",
-              color: "#fff",
-              border: "none",
-              fontWeight: "800",
-              fontSize: isMobile ? "18px" : "14px",
-              minHeight: isMobile ? "58px" : "42px",
-              minWidth: "150px",
-              cursor: "pointer",
-              boxShadow: "0 6px 16px rgba(0,0,0,0.25)",
-            }}
-          >
-            Reset
-          </button>
         </div>
       </div>
 
@@ -927,6 +868,69 @@ export default function TacticalBoard() {
           cursor: pointer;
         }
       `}</style>
+      {/* BOTTOM ACTION BAR */}
+<div
+  style={{
+    position: "fixed",
+    bottom: "18px",
+    left: "50%",
+    transform: "translateX(-50%)",
+    display: "flex",
+    gap: "14px",
+    padding: "12px 14px",
+    background: "rgba(15, 23, 42, 0.9)",
+    border: "1px solid #334155",
+    borderRadius: "18px",
+    backdropFilter: "blur(10px)",
+    zIndex: 300,
+    alignItems: "center",
+  }}
+>
+  <button
+    onClick={() => setShowOpposition((o) => !o)}
+    style={{
+      padding: "14px 18px",
+      borderRadius: "14px",
+      background: showOpposition ? "#7c3aed" : "#334155",
+      color: "#fff",
+      border: "none",
+      fontWeight: "800",
+      cursor: "pointer",
+    }}
+  >
+    Opp
+  </button>
+
+  <button
+    onClick={() => setLines((l) => l.slice(0, -1))}
+    style={{
+      padding: "14px 18px",
+      borderRadius: "14px",
+      background: "#334155",
+      color: "#fff",
+      border: "none",
+      fontWeight: "800",
+      cursor: "pointer",
+    }}
+  >
+    Undo
+  </button>
+
+  <button
+    onClick={resetFormation}
+    style={{
+      padding: "14px 18px",
+      borderRadius: "14px",
+      background: "#dc2626",
+      color: "#fff",
+      border: "none",
+      fontWeight: "800",
+      cursor: "pointer",
+    }}
+  >
+    Reset
+  </button>
+</div>
     </div>
   );
 }
